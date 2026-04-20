@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..800,100&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --sand-light: #f7ead8;
+  --terracotta: #e95f33;
+  --olive: #788449;
+  --midnight: #201b16;
+  --parchment: #f7ecdc;
+  --sunrise: #f7c78f;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: radial-gradient(circle at 8% 8%, #fff8ef 0%, #f7ecdc 48%, #f2e4d2 100%);
+  color: var(--midnight);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Ambient background texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(233, 95, 51, 0.12) 0, rgba(233, 95, 51, 0) 33%),
+    radial-gradient(circle at 82% 14%, rgba(120, 132, 73, 0.15) 0, rgba(120, 132, 73, 0) 28%),
+    radial-gradient(circle at 88% 80%, rgba(201, 119, 63, 0.12) 0, rgba(201, 119, 63, 0) 34%);
+  pointer-events: none;
+  z-index: -2;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--parchment);
+}
+::-webkit-scrollbar-thumb {
+  background: #d4852a;
+  border-radius: 3px;
+}
+
+/* Leaflet fixes */
+.leaflet-container {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  border-radius: 1.5rem;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-terracotta-500 hover:bg-terracotta-600 text-white font-body font-semibold px-6 py-3 rounded-full transition-all duration-200 shadow-lg shadow-terracotta-500/20 hover:shadow-xl hover:shadow-terracotta-500/25 hover:-translate-y-0.5;
+  }
+
+  .btn-secondary {
+    @apply bg-white/75 hover:bg-white text-midnight font-body font-semibold px-6 py-3 rounded-full transition-all duration-200 border border-sand-200;
+  }
+
+  .card {
+    @apply bg-white/75 backdrop-blur-sm rounded-4xl shadow-lg shadow-sand-500/10 border border-white/70 overflow-hidden;
+  }
+
+  .section-title {
+    @apply font-display text-4xl md:text-5xl font-medium tracking-tight text-midnight;
+  }
+
+  .tag {
+    @apply inline-flex items-center gap-1.5 bg-white/85 text-sand-700 text-xs font-body font-semibold px-3 py-1.5 rounded-full border border-sand-200;
+  }
+
+  .glass {
+    @apply bg-white/65 backdrop-blur-md border border-white/75 shadow-lg shadow-sand-500/10;
+  }
+
+  .surface-card {
+    @apply bg-white/80 backdrop-blur-sm rounded-5xl border border-white shadow-xl shadow-sand-500/10;
+  }
+}
+
+/* Custom animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f3e4cf 25%, #fbf2e5 50%, #f3e4cf 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
