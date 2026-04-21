@@ -48,7 +48,7 @@ function PlaceCard({ place }: { place: (typeof placesData)[0] }) {
         <div className="flex items-start justify-between gap-2 mb-2">
           <h3 className="font-display text-xl font-medium text-midnight">{place.name}</h3>
           <div className="flex items-center gap-1 flex-shrink-0">
-            <Star size={13} fill="#d4852a" className="text-sand-500" />
+            <Star size={13} fill="currentColor" className="text-terracotta-500" />
             <span className="font-body text-sm font-medium text-sand-600">{place.rating}</span>
           </div>
         </div>
@@ -88,7 +88,7 @@ function ExperienceCard({ exp }: { exp: (typeof experiencesData)[0] }) {
         </div>
         <div className="flex items-center justify-between mt-3">
           <div className="flex items-center gap-1">
-            <Star size={12} fill="#d4852a" className="text-sand-500" />
+            <Star size={12} fill="currentColor" className="text-terracotta-500" />
             <span className="text-xs font-body font-medium text-sand-600">{exp.rating}</span>
           </div>
           <span className="font-display text-base font-semibold text-terracotta-500">{format(exp.price)}</span>

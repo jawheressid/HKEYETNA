@@ -119,7 +119,7 @@ export default function ExplorePage() {
       {/* Page Header */}
       <div className="bg-gradient-to-br from-midnight to-midnight/90 pt-32 pb-16 px-6 relative overflow-hidden">
         <div className="absolute inset-0 opacity-20" style={{
-          backgroundImage: 'radial-gradient(circle at 30% 50%, #eb5230 0%, transparent 60%), radial-gradient(circle at 80% 20%, #d4852a 0%, transparent 50%)',
+          backgroundImage: 'radial-gradient(circle at 30% 50%, #7caedd 0%, transparent 60%), radial-gradient(circle at 80% 20%, #97bee0 0%, transparent 50%)',
         }} />
         <div className="max-w-7xl mx-auto relative z-10">
           <motion.div

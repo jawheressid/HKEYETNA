@@ -14,7 +14,7 @@ const getChatModel = (systemInstruction: string) => {
 
   const genAI = new GoogleGenerativeAI(apiKey);
   return genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.0-flash',
     systemInstruction,
     generationConfig: {
       maxOutputTokens: 500,

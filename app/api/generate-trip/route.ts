@@ -9,7 +9,7 @@ const getTripModel = () => {
 
   const genAI = new GoogleGenerativeAI(apiKey);
   return genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.0-flash',
     generationConfig: {
       maxOutputTokens: 4096,
       temperature: 0.7,
@@ -20,8 +20,19 @@ const getTripModel = () => {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { budget, duration, interests, startCity } = body;
+    const { budget, duration, interests, startCity, preferences } = body;
     const safeInterests = Array.isArray(interests) ? interests : ['culture'];
+    const includeWorkshops = Boolean(preferences?.includeWorkshops);
+    const transportPreference =
+      preferences?.transportPreference === 'has-transport'
+        ? 'L\'utilisateur a déjà un moyen de transport'
+        : preferences?.transportPreference === 'need-transport'
+          ? 'L\'utilisateur veut des options de transport intégrées'
+          : 'Aucune préférence particulière sur le transport';
+    const wantsGuide = preferences?.wantsGuide === false ? 'Non' : 'Oui';
+    const notes = typeof preferences?.notes === 'string' && preferences.notes.trim().length > 0
+      ? preferences.notes.trim()
+      : 'Aucune note supplémentaire';
 
     const prompt = `Tu es un expert en tourisme tunisien. Génère un itinéraire de voyage détaillé en Tunisie.
 
@@ -30,6 +41,10 @@ Paramètres du voyage :
 - Durée : ${duration} jours
 - Intérêts : ${safeInterests.join(', ')}
 - Ville de départ : ${startCity || 'Tunis'}
+- Workshops/ateliers : ${includeWorkshops ? 'Oui, inclure des ateliers immersifs' : 'Non, ateliers non prioritaires'}
+- Transport : ${transportPreference}
+- Guide local : ${wantsGuide}
+- Préférences supplémentaires : ${notes}
 
 Génère un itinéraire JSON structuré avec exactement ce format :
 {
@@ -65,6 +80,10 @@ Génère un itinéraire JSON structuré avec exactement ce format :
 Les types d'activités possibles : "visite", "repas", "activité", "hébergement", "transport"
 Inclus 4-5 activités par jour : petit-déjeuner, visite matinale, déjeuner, activité après-midi, dîner.
 Utilise des vrais noms de lieux tunisiens, des prix réalistes en DT.
+Contraintes :
+- Si workshops = oui, inclure au moins un atelier (type "activité") pendant le séjour.
+- Si transport = besoin de transport, inclure des activités de type "transport" (transferts/navettes).
+- Si guide local = oui, mentionner explicitement au moins une activité guidée par jour.
 Réponds UNIQUEMENT avec le JSON, aucune explication.`;
 
     const model = getTripModel();
@@ -86,6 +105,7 @@ Réponds UNIQUEMENT avec le JSON, aucune explication.`;
       budget: body.budget || 1500,
       duration: body.duration || 3,
       interests: body.interests || ['culture'],
+      preferences: body.preferences,
     });
     return NextResponse.json(fallback);
   }

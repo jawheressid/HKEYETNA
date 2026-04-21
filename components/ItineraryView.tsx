@@ -36,11 +36,11 @@ interface Trip {
 }
 
 const TYPE_ICONS: Record<string, { icon: any; color: string; bg: string }> = {
-  visite: { icon: Camera, color: 'text-blue-600', bg: 'bg-blue-50' },
-  repas: { icon: Utensils, color: 'text-orange-600', bg: 'bg-orange-50' },
-  activité: { icon: Coffee, color: 'text-purple-600', bg: 'bg-purple-50' },
-  hébergement: { icon: Hotel, color: 'text-terracotta-600', bg: 'bg-terracotta-50' },
-  transport: { icon: Bus, color: 'text-green-600', bg: 'bg-green-50' },
+  visite: { icon: Camera, color: 'text-terracotta-700', bg: 'bg-terracotta-50' },
+  repas: { icon: Utensils, color: 'text-olive-700', bg: 'bg-olive-50' },
+  activité: { icon: Coffee, color: 'text-sand-700', bg: 'bg-sand-100' },
+  hébergement: { icon: Hotel, color: 'text-midnight', bg: 'bg-sand-100' },
+  transport: { icon: Bus, color: 'text-terracotta-600', bg: 'bg-terracotta-100' },
 };
 
 function WeatherBadge({ lat, lng }: { lat?: number; lng?: number }) {
@@ -206,7 +206,7 @@ export default function ItineraryView({ trip }: Props) {
                                 <h4 className="font-body font-semibold text-midnight">{day.hotel.name}</h4>
                                 <div className="flex items-center gap-1 mt-1">
                                   {Array.from({ length: day.hotel.stars }).map((_, i) => (
-                                    <Star key={i} size={12} fill="#d4852a" className="text-sand-500" />
+                                    <Star key={i} size={12} fill="currentColor" className="text-terracotta-500" />
                                   ))}
                                 </div>
                               </div>

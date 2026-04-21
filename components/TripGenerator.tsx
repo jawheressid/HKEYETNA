@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, DollarSign, Clock, Heart, MapPin, ChevronRight, Loader2 } from 'lucide-react';
+import { Sparkles, DollarSign, Clock, Heart, ChevronRight } from 'lucide-react';
 import { useCurrency } from '@/context/CurrencyContext';
 
 const INTERESTS = [
@@ -16,6 +16,14 @@ const INTERESTS = [
   { id: 'spirituel', label: '🕌 Spirituel', desc: 'Lieux sacrés' },
 ];
 
+type TransportPreference = 'has-transport' | 'need-transport' | 'no-preference';
+
+const TRANSPORT_OPTIONS: Array<{ id: TransportPreference; label: string; desc: string; emoji: string }> = [
+  { id: 'has-transport', label: 'J’ai déjà un transport', desc: 'Voiture perso / transport déjà réservé', emoji: '🚗' },
+  { id: 'need-transport', label: 'Je veux un transport', desc: 'Je souhaite des options de transfert', emoji: '🚌' },
+  { id: 'no-preference', label: 'Peu importe', desc: 'L’IA décide selon l’itinéraire', emoji: '🧭' },
+];
+
 interface Props {
   onTripGenerated: (trip: any) => void;
 }
@@ -25,6 +33,10 @@ export default function TripGenerator({ onTripGenerated }: Props) {
   const [budget, setBudget] = useState(2000);
   const [duration, setDuration] = useState(5);
   const [selectedInterests, setSelectedInterests] = useState<string[]>(['culture', 'gastronomie']);
+  const [includeWorkshops, setIncludeWorkshops] = useState(true);
+  const [transportPreference, setTransportPreference] = useState<TransportPreference>('no-preference');
+  const [wantsGuide, setWantsGuide] = useState(true);
+  const [extraPreferences, setExtraPreferences] = useState('');
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
 
@@ -41,7 +53,17 @@ export default function TripGenerator({ onTripGenerated }: Props) {
       const res = await fetch('/api/generate-trip', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ budget, duration, interests: selectedInterests }),
+        body: JSON.stringify({
+          budget,
+          duration,
+          interests: selectedInterests,
+          preferences: {
+            includeWorkshops,
+            transportPreference,
+            wantsGuide,
+            notes: extraPreferences.trim(),
+          },
+        }),
       });
       const trip = await res.json();
       onTripGenerated(trip);
@@ -89,11 +111,12 @@ export default function TripGenerator({ onTripGenerated }: Props) {
             {[
               { n: 1, label: 'Budget & Durée', icon: DollarSign },
               { n: 2, label: 'Intérêts', icon: Heart },
-              { n: 3, label: 'Génération', icon: Sparkles },
+              { n: 3, label: 'Préférences', icon: Heart },
+              { n: 4, label: 'Génération', icon: Sparkles },
             ].map(({ n, label, icon: Icon }) => (
               <button
                 key={n}
-                onClick={() => n < 3 && setStep(n)}
+                onClick={() => n < 4 && setStep(n)}
                 className={`flex-1 flex items-center justify-center gap-2 py-5 text-sm font-medium transition-colors ${
                   step === n
                     ? 'bg-terracotta-50 text-terracotta-600 border-b-2 border-terracotta-500'
@@ -227,9 +250,122 @@ export default function TripGenerator({ onTripGenerated }: Props) {
                       Retour
                     </button>
                     <button
-                      onClick={() => { setStep(3); generateTrip(); }}
+                      onClick={() => setStep(3)}
                       disabled={selectedInterests.length === 0}
                       className="btn-primary flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Suivant
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Step 3: Preferences */}
+              {step === 3 && (
+                <motion.div
+                  key="step3"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-8"
+                >
+                  <div className="space-y-6">
+                    <div>
+                      <p className="font-body font-semibold text-midnight mb-3">Souhaitez-vous des workshops (ateliers) ?</p>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          onClick={() => setIncludeWorkshops(true)}
+                          className={`rounded-2xl border-2 px-4 py-4 text-left transition-all ${
+                            includeWorkshops
+                              ? 'border-terracotta-500 bg-terracotta-50 text-terracotta-700'
+                              : 'border-sand-200 bg-white text-midnight/70 hover:border-sand-300'
+                          }`}
+                        >
+                          <p className="font-body font-semibold text-sm">Oui, ajoutez des ateliers</p>
+                          <p className="text-xs font-body mt-1 opacity-80">Cuisine, artisanat, activités créatives</p>
+                        </button>
+                        <button
+                          onClick={() => setIncludeWorkshops(false)}
+                          className={`rounded-2xl border-2 px-4 py-4 text-left transition-all ${
+                            !includeWorkshops
+                              ? 'border-terracotta-500 bg-terracotta-50 text-terracotta-700'
+                              : 'border-sand-200 bg-white text-midnight/70 hover:border-sand-300'
+                          }`}
+                        >
+                          <p className="font-body font-semibold text-sm">Non, pas nécessaire</p>
+                          <p className="text-xs font-body mt-1 opacity-80">Plutôt visites classiques et détente</p>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="font-body font-semibold text-midnight mb-3">Transport</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        {TRANSPORT_OPTIONS.map((option) => (
+                          <button
+                            key={option.id}
+                            onClick={() => setTransportPreference(option.id)}
+                            className={`rounded-2xl border-2 px-4 py-4 text-left transition-all ${
+                              transportPreference === option.id
+                                ? 'border-terracotta-500 bg-terracotta-50 text-terracotta-700'
+                                : 'border-sand-200 bg-white text-midnight/70 hover:border-sand-300'
+                            }`}
+                          >
+                            <p className="font-body font-semibold text-sm">{option.emoji} {option.label}</p>
+                            <p className="text-xs font-body mt-1 opacity-80">{option.desc}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="font-body font-semibold text-midnight mb-3">Guide local</p>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          onClick={() => setWantsGuide(true)}
+                          className={`rounded-2xl border-2 px-4 py-4 text-left transition-all ${
+                            wantsGuide
+                              ? 'border-terracotta-500 bg-terracotta-50 text-terracotta-700'
+                              : 'border-sand-200 bg-white text-midnight/70 hover:border-sand-300'
+                          }`}
+                        >
+                          <p className="font-body font-semibold text-sm">Oui, je veux un guide</p>
+                          <p className="text-xs font-body mt-1 opacity-80">Visites guidées et conseils d’expert</p>
+                        </button>
+                        <button
+                          onClick={() => setWantsGuide(false)}
+                          className={`rounded-2xl border-2 px-4 py-4 text-left transition-all ${
+                            !wantsGuide
+                              ? 'border-terracotta-500 bg-terracotta-50 text-terracotta-700'
+                              : 'border-sand-200 bg-white text-midnight/70 hover:border-sand-300'
+                          }`}
+                        >
+                          <p className="font-body font-semibold text-sm">Non, je préfère en autonomie</p>
+                          <p className="text-xs font-body mt-1 opacity-80">Parcours libre sans accompagnement</p>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="font-body font-semibold text-midnight mb-2 block">Autres préférences (optionnel)</label>
+                      <textarea
+                        value={extraPreferences}
+                        onChange={(e) => setExtraPreferences(e.target.value)}
+                        placeholder="Ex: hôtel calme, activités famille, peu de marche, préférence poisson, etc."
+                        className="w-full min-h-28 bg-white border border-sand-200 rounded-2xl px-4 py-3 font-body text-sm text-midnight placeholder-midnight/35 focus:outline-none focus:border-terracotta-400 transition-colors resize-y"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <button onClick={() => setStep(2)} className="btn-secondary flex items-center gap-2">
+                      Retour
+                    </button>
+                    <button
+                      onClick={() => { setStep(4); generateTrip(); }}
+                      className="btn-primary flex items-center gap-2"
                     >
                       <Sparkles size={16} />
                       Générer mon voyage
@@ -238,10 +374,10 @@ export default function TripGenerator({ onTripGenerated }: Props) {
                 </motion.div>
               )}
 
-              {/* Step 3: Loading */}
-              {step === 3 && (
+              {/* Step 4: Loading */}
+              {step === 4 && (
                 <motion.div
-                  key="step3"
+                  key="step4"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.4 }}

@@ -33,10 +33,10 @@ const createCustomIcon = (color: string, label: string) =>
   });
 
 const CATEGORY_ICONS: Record<string, { color: string; emoji: string }> = {
-  site: { color: '#eb5230', emoji: '🏛️' },
-  destination: { color: '#d4852a', emoji: '📍' },
-  hotel: { color: '#828d4c', emoji: '🏨' },
-  activity: { color: '#6366f1', emoji: '⚡' },
+  site: { color: '#7caedd', emoji: '🏛️' },
+  destination: { color: '#97bee0', emoji: '📍' },
+  hotel: { color: '#b1c6da', emoji: '🏨' },
+  activity: { color: '#6c9bc9', emoji: '⚡' },
 };
 
 interface Place {
@@ -85,7 +85,7 @@ export default function MapContent({ places = [], center = [33.8869, 9.5375], zo
       {showPath && polylinePath.length > 1 && (
         <Polyline
           positions={polylinePath}
-          color="#eb5230"
+          color="#7caedd"
           weight={3}
           opacity={0.7}
           dashArray="8, 8"

@@ -46,7 +46,7 @@ const SOCIAL_POSTS = [
     user: 'sidi_bou_said_love',
     avatar: '🏡',
     location: 'Sidi Bou Saïd',
-    image: 'https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=400&q=80',
+    image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=400&q=80',
     isVideo: false,
     caption: 'Le bleu et blanc iconique de Sidi Bou Saïd 💙 Chaque ruelle est un tableau. #SidiBouSaid #Tunisie #Architecture',
     likes: 8450,
@@ -177,12 +177,12 @@ export default function SocialFeed() {
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => toggleLike(post.id)}
-                    className="flex items-center gap-1.5 text-white/80 hover:text-red-400 transition-colors"
+                    className="flex items-center gap-1.5 text-white/80 hover:text-terracotta-300 transition-colors"
                   >
                     <Heart
                       size={16}
-                      fill={likedPosts.has(post.id) ? '#f87171' : 'none'}
-                      className={likedPosts.has(post.id) ? 'text-red-400' : ''}
+                      fill={likedPosts.has(post.id) ? 'currentColor' : 'none'}
+                      className={likedPosts.has(post.id) ? 'text-terracotta-300' : ''}
                     />
                     <span className="text-xs font-body">
                       {formatNumber(post.likes + (likedPosts.has(post.id) ? 1 : 0))}

@@ -6,6 +6,12 @@ export interface TripInput {
   duration: number; // days
   interests: string[];
   startCity?: string;
+  preferences?: {
+    includeWorkshops?: boolean;
+    transportPreference?: 'has-transport' | 'need-transport' | 'no-preference';
+    wantsGuide?: boolean;
+    notes?: string;
+  };
 }
 
 export interface DayActivity {
@@ -76,8 +82,12 @@ function selectHotel(city: string, dailyBudget: number) {
 }
 
 export function buildMockTrip(input: TripInput): GeneratedTrip {
-  const { budget, duration, interests } = input;
+  const { budget, duration, interests, preferences } = input;
   const dailyBudget = budget / duration;
+  const includeWorkshops = Boolean(preferences?.includeWorkshops);
+  const transportPreference = preferences?.transportPreference || 'no-preference';
+  const wantsGuide = preferences?.wantsGuide !== false;
+  const extraNotes = preferences?.notes?.trim();
 
   // Select destinations based on interests
   const destinationMap: Record<string, string[]> = {
@@ -110,10 +120,34 @@ export function buildMockTrip(input: TripInput): GeneratedTrip {
 
   const days: DayPlan[] = selectedCities.slice(0, duration).map((city, i) => {
     const hotel = selectHotel(city, dailyBudget);
-    const activities: DayActivity[] = [
+    const activities: DayActivity[] = [];
+
+    if (transportPreference === 'need-transport') {
+      activities.push({
+        time: '08:00',
+        title: 'Transfert organisé',
+        description: `Navette ou chauffeur privé pour rejoindre facilement les points forts de ${city}.`,
+        type: 'transport',
+        price: 40,
+        location: city,
+      });
+    }
+
+    if (transportPreference === 'has-transport') {
+      activities.push({
+        time: '08:00',
+        title: 'Déplacement en transport personnel',
+        description: 'Trajet avec votre propre véhicule, itinéraire optimisé pour limiter les détours.',
+        type: 'transport',
+        price: 0,
+        location: city,
+      });
+    }
+
+    activities.push(
       {
         time: '09:00',
-        title: `Petit-déjeuner tunisien`,
+        title: 'Petit-déjeuner tunisien',
         description: 'Démarrez la journée avec un authentique petit-déjeuner : pain msemen, huile d\'olive, olives et thé à la menthe.',
         type: 'repas',
         price: 15,
@@ -122,9 +156,11 @@ export function buildMockTrip(input: TripInput): GeneratedTrip {
       {
         time: '10:30',
         title: `Exploration de ${city}`,
-        description: `Découverte des sites emblématiques de ${city} avec un guide local passionné.`,
+        description: wantsGuide
+          ? `Découverte des sites emblématiques de ${city} avec un guide local passionné.`
+          : `Découverte libre des sites emblématiques de ${city}, avec recommandations d'itinéraire.`,
         type: 'visite',
-        price: 60,
+        price: wantsGuide ? 60 : 35,
         location: city,
       },
       {
@@ -137,10 +173,12 @@ export function buildMockTrip(input: TripInput): GeneratedTrip {
       },
       {
         time: '15:00',
-        title: `Activité ${interests[0] || 'culturelle'}`,
-        description: `Expérience ${interests[0] || 'culturelle'} incontournable au cœur de ${city}.`,
+        title: includeWorkshops ? 'Workshop local immersif' : `Activité ${interests[0] || 'culturelle'}`,
+        description: includeWorkshops
+          ? `Atelier pratique animé par des artisans locaux au cœur de ${city}.`
+          : `Expérience ${interests[0] || 'culturelle'} incontournable au cœur de ${city}.`,
         type: 'activité',
-        price: 80,
+        price: includeWorkshops ? 95 : 80,
         location: city,
       },
       {
@@ -151,7 +189,7 @@ export function buildMockTrip(input: TripInput): GeneratedTrip {
         price: 55,
         location: city,
       },
-    ];
+    );
 
     const actCost = activities.reduce((s, a) => s + a.price, 0);
     const totalDayCost = actCost + hotel.price;
@@ -167,16 +205,28 @@ export function buildMockTrip(input: TripInput): GeneratedTrip {
 
   const totalCost = days.reduce((s, d) => s + d.totalDayCost, 0);
 
+  const extraHighlights = [
+    includeWorkshops ? 'Ateliers immersifs intégrés pendant le séjour' : null,
+    transportPreference === 'need-transport' ? 'Transferts et trajets organisés selon vos étapes' : null,
+    transportPreference === 'has-transport' ? 'Trajets optimisés pour votre transport personnel' : null,
+    wantsGuide ? 'Visites guidées par des experts locaux' : 'Itinéraire autonome avec repères clairs',
+    extraNotes ? `Préférences personnalisées prises en compte : ${extraNotes}` : null,
+  ].filter(Boolean) as string[];
+
+  const baseSummary = `Un itinéraire ${duration} jours soigneusement sélectionné pour un budget de ${budget} DT, combinant ${interests.join(', ')} à travers les plus beaux paysages tunisiens.`;
+  const summary = extraNotes ? `${baseSummary} Vos préférences spécifiques ont été intégrées : ${extraNotes}.` : baseSummary;
+
   return {
     title: `Voyage en Tunisie — ${duration} Jours Inoubliables`,
-    summary: `Un itinéraire ${duration} jours soigneusement sélectionné pour un budget de ${budget} DT, combinant ${interests.join(', ')} à travers les plus beaux paysages tunisiens.`,
+    summary,
     days,
     totalCost,
     highlights: [
       `${duration} nuits dans des hébergements soigneusement sélectionnés`,
       `Expériences authentiques avec des locaux passionnés`,
       `Cuisine tunisienne dans les meilleurs restaurants`,
-      `Guides experts dans chaque destination`,
-    ],
+      `Parcours adapté à votre rythme de voyage`,
+      ...extraHighlights,
+    ].slice(0, 6),
   };
 }

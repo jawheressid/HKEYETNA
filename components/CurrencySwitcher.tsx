@@ -23,7 +23,7 @@ export default function CurrencySwitcher() {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 bg-sand-100 hover:bg-sand-200 px-3 py-2 rounded-xl transition-colors text-sm font-body font-medium text-midnight"
+        className="flex items-center gap-2 bg-white/85 hover:bg-white border border-sand-200 px-3 py-2 rounded-full transition-colors text-sm font-body font-semibold text-midnight"
       >
         <span>{current.flag}</span>
         <span>{current.code}</span>
@@ -37,7 +37,7 @@ export default function CurrencySwitcher() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 w-44 bg-white rounded-2xl shadow-xl border border-sand-100 overflow-hidden z-50"
+            className="absolute right-0 top-full mt-2 w-44 bg-white/95 backdrop-blur-md rounded-3xl shadow-xl border border-sand-200 overflow-hidden z-50"
           >
             {CURRENCIES.map((c) => (
               <button
@@ -47,7 +47,7 @@ export default function CurrencySwitcher() {
                   setOpen(false);
                 }}
                 className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-body transition-colors hover:bg-sand-50 ${
-                  currency === c.code ? 'bg-sand-100 text-terracotta-600 font-medium' : 'text-midnight'
+                  currency === c.code ? 'bg-sand-100 text-terracotta-600 font-semibold' : 'text-midnight'
                 }`}
               >
                 <span>{c.flag}</span>

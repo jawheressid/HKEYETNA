@@ -7,7 +7,7 @@ import { ArrowDown, Play, Star, MapPin, Sparkles, Clock3, Compass } from 'lucide
 
 const HERO_IMAGES = [
   {
-    url: 'https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=1200&q=80',
+    url: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1200&q=80',
     place: 'Sidi Bou Saïd',
     region: 'Grand Tunis',
   },
