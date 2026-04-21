@@ -24,7 +24,7 @@ export default function Navbar() {
 
   return (
     <motion.nav
-      initial={{ y: -80, opacity: 0 }}
+      initial={false}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="fixed top-4 left-0 right-0 z-50 px-4"
@@ -37,15 +37,13 @@ export default function Navbar() {
         }`}
       >
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-9 h-9 bg-gradient-to-br from-terracotta-400 to-terracotta-600 rounded-2xl flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
-            <span className="text-white font-display font-semibold text-sm">H</span>
-          </div>
-          <span className="font-display text-xl font-semibold text-midnight tracking-tight">
-            HKEYETNA
-          </span>
+        <Link href="/" className="flex items-center">
+          <img
+            src="/branding/hkeyetna1.png"
+            alt="HKEYETNA"
+            className="h-16 sm:h-26 md:h-22 w-auto"
+          />
         </Link>
-
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-3 bg-white/70 border border-sand-200 rounded-full px-2 py-1">
           {navLinks.map((link) => (

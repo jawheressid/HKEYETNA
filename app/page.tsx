@@ -29,6 +29,7 @@ function PlaceCard({ place }: { place: (typeof placesData)[0] }) {
           src={place.image}
           alt={place.name}
           fill
+          unoptimized
           className="object-cover transition-transform duration-700 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
@@ -71,7 +72,7 @@ function ExperienceCard({ exp }: { exp: (typeof experiencesData)[0] }) {
   return (
     <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.3 }} className="flex gap-4 bg-white rounded-3xl p-4 border border-sand-100 shadow-sm group cursor-pointer">
       <div className="relative w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0">
-        <Image src={exp.image} alt={exp.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+        <Image src={exp.image} alt={exp.name} fill unoptimized className="object-cover group-hover:scale-110 transition-transform duration-500" />
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
@@ -120,7 +121,7 @@ export default function HomePage() {
       <section className="py-20 px-6">
         <div className="max-w-7xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
@@ -141,7 +142,7 @@ export default function HomePage() {
             {FEATURED_PLACES.map((place, i) => (
               <motion.div
                 key={place.id}
-                initial={{ opacity: 0, y: 30 }}
+                initial={false}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.08 }}
@@ -158,7 +159,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="surface-card p-6 sm:p-8">
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
+              initial={false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7 }}
@@ -181,7 +182,7 @@ export default function HomePage() {
       <section className="py-20 px-6">
         <div className="max-w-7xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
@@ -199,7 +200,7 @@ export default function HomePage() {
             {experiencesData.slice(0, 6).map((exp, i) => (
               <motion.div
                 key={exp.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={false}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.07, duration: 0.5 }}
@@ -219,7 +220,7 @@ export default function HomePage() {
       {/* Generated Itinerary */}
       {generatedTrip && (
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={false}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >

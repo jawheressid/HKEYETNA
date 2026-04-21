@@ -196,6 +196,7 @@ export default function ItineraryView({ trip }: Props) {
                               src={day.hotel.image}
                               alt={day.hotel.name}
                               fill
+                              unoptimized
                               className="object-cover"
                             />
                           </div>

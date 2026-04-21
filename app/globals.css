@@ -30,6 +30,31 @@ body {
   overflow-x: hidden;
 }
 
+.site-sticker-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.site-sticker-item {
+  position: absolute;
+  opacity: 0.14;
+  filter: drop-shadow(0 8px 16px rgba(34, 55, 76, 0.12));
+  user-select: none;
+}
+
+@media (max-width: 768px) {
+  .site-sticker-item {
+    opacity: 0.1;
+  }
+
+  .site-sticker-item:nth-child(n+10) {
+    display: none;
+  }
+}
+
 /* Ambient background texture */
 body::before {
   content: '';

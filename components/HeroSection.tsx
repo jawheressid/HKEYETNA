@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowDown, Play, Star, MapPin, Sparkles, Clock3, Compass } from 'lucide-react';
+import { ArrowDown, Play, Star, MapPin, Clock3, Compass } from 'lucide-react';
 
 const HERO_IMAGES = [
   {
@@ -29,6 +29,18 @@ const STATS = [
   { value: '4.9★', label: 'Note moyenne' },
 ];
 
+const BRAND_STICKERS = [
+  { src: '/branding/sticker-fan.png', alt: 'Eventail traditionnel' },
+  { src: '/branding/sticker-khamsa.png', alt: 'Main khamsa' },
+  { src: '/branding/sticker-bag.png', alt: 'Pochette rouge' },
+  { src: '/branding/sticker-tea.png', alt: 'The a la menthe' },
+  { src: '/branding/sticker-tunisia.png', alt: 'Lettrage Tunisia' },
+  { src: '/branding/sticker-flowers.png', alt: 'Motif floral' },
+  { src: '/branding/sticker-door.png', alt: 'Porte orientale' },
+  { src: '/branding/sticker-fish.png', alt: 'Poisson bleu' },
+  { src: '/branding/sticker-arabic.png', alt: 'Calligraphie arabe' },
+];
+
 export default function HeroSection() {
   const [activeImg, setActiveImg] = useState(0);
 
@@ -45,7 +57,13 @@ export default function HeroSection() {
     <section className="relative overflow-hidden pt-36 pb-20 md:pt-40 md:pb-28 px-6">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-14 items-center">
         <div>
-    
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-6 max-w-2xl"
+          >
+          </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 30 }}

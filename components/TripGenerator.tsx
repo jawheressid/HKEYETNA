@@ -79,7 +79,7 @@ export default function TripGenerator({ onTripGenerated }: Props) {
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
@@ -100,7 +100,7 @@ export default function TripGenerator({ onTripGenerated }: Props) {
 
         {/* Generator Card */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, delay: 0.1 }}
@@ -141,7 +141,7 @@ export default function TripGenerator({ onTripGenerated }: Props) {
               {step === 1 && (
                 <motion.div
                   key="step1"
-                  initial={{ opacity: 0, x: 20 }}
+                  initial={false}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
@@ -212,7 +212,7 @@ export default function TripGenerator({ onTripGenerated }: Props) {
               {step === 2 && (
                 <motion.div
                   key="step2"
-                  initial={{ opacity: 0, x: 20 }}
+                  initial={false}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
@@ -265,7 +265,7 @@ export default function TripGenerator({ onTripGenerated }: Props) {
               {step === 3 && (
                 <motion.div
                   key="step3"
-                  initial={{ opacity: 0, x: 20 }}
+                  initial={false}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
@@ -373,12 +373,11 @@ export default function TripGenerator({ onTripGenerated }: Props) {
                   </div>
                 </motion.div>
               )}
-
               {/* Step 4: Loading */}
               {step === 4 && (
                 <motion.div
                   key="step4"
-                  initial={{ opacity: 0, scale: 0.95 }}
+                  initial={false}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.4 }}
                   className="flex flex-col items-center justify-center py-20 gap-8"
@@ -404,7 +403,7 @@ export default function TripGenerator({ onTripGenerated }: Props) {
                         {['Recherche des hôtels', 'Sélection des activités', 'Optimisation du budget'].map((t, i) => (
                           <motion.span
                             key={t}
-                            initial={{ opacity: 0 }}
+                            initial={false}
                             animate={{ opacity: [0, 1, 0] }}
                             transition={{ duration: 2, delay: i * 0.6, repeat: Infinity }}
                             className="tag"

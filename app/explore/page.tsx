@@ -19,7 +19,7 @@ function PlaceCard({ place, index }: { place: (typeof placesData)[0]; index: num
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 20 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.4, delay: index * 0.05 }}
@@ -31,6 +31,7 @@ function PlaceCard({ place, index }: { place: (typeof placesData)[0]; index: num
           src={place.image}
           alt={place.name}
           fill
+          unoptimized
           className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
@@ -123,7 +124,7 @@ export default function ExplorePage() {
         }} />
         <div className="max-w-7xl mx-auto relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
           >
@@ -275,7 +276,7 @@ export default function ExplorePage() {
             </AnimatePresence>
             {filtered.length === 0 && (
               <motion.div
-                initial={{ opacity: 0 }}
+                initial={false}
                 animate={{ opacity: 1 }}
                 className="col-span-full text-center py-24"
               >

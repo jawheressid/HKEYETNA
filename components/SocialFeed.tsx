@@ -99,7 +99,7 @@ export default function SocialFeed() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={false}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
@@ -127,7 +127,7 @@ export default function SocialFeed() {
           {SOCIAL_POSTS.map((post, i) => (
             <motion.div
               key={post.id}
-              initial={{ opacity: 0, y: 30 }}
+              initial={false}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.07 }}
@@ -212,7 +212,7 @@ export default function SocialFeed() {
 
         {/* CTA */}
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={false}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           className="text-center mt-12"
