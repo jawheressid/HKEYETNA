@@ -27,7 +27,13 @@ export async function POST(request: NextRequest) {
       highlights: trip.highlights,
       status: 'saved',
       cover_image: trip.days?.[0]?.hotel?.image ?? null,
-      preferences: input.preferences ?? {},
+      preferences: {
+        ...(input.preferences ?? {}),
+        startDate: input.startDate,
+        endDate: input.endDate,
+        regions: input.regions,
+        selectedExperienceIds: input.selectedExperienceIds,
+      },
       trip_data: trip,
     })
     .select()

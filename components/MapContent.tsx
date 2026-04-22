@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -13,30 +13,57 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 });
 
-const createCustomIcon = (color: string, label: string) =>
+const createCustomIcon = (color: string, emoji: string, orderLabel?: string) =>
   L.divIcon({
     html: `<div style="
       background: ${color};
       border: 3px solid white;
-      border-radius: 50% 50% 50% 0;
-      width: 36px;
-      height: 36px;
-      transform: rotate(-45deg);
+      border-radius: 9999px;
+      width: 38px;
+      height: 38px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-      display:flex; align-items:center; justify-content:center;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      font-size:16px;
     ">
-      <span style="transform: rotate(45deg); font-size:14px; display:block; text-align:center; line-height:30px;">${label}</span>
+      <span>${emoji}</span>
+      ${orderLabel ? `<span style="position:absolute; bottom:-6px; right:-6px; background:#0f172a; color:#fff; width:18px; height:18px; border-radius:9999px; font-size:11px; display:flex; align-items:center; justify-content:center; border:2px solid white;">${orderLabel}</span>` : ''}
     </div>`,
-    iconSize: [36, 36],
-    iconAnchor: [18, 36],
+    iconSize: [38, 38],
+    iconAnchor: [19, 38],
     className: '',
   });
+
+const walkerIcon = L.divIcon({
+  html: `<div style="
+      width:36px;
+      height:36px;
+      border-radius:9999px;
+      background:#0f172a;
+      color:white;
+      border:3px solid white;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 6px 16px rgba(0,0,0,.25);
+      font-size:18px;
+    ">🚶</div>`,
+  iconSize: [36, 36],
+  iconAnchor: [18, 18],
+  className: '',
+});
 
 const CATEGORY_ICONS: Record<string, { color: string; emoji: string }> = {
   site: { color: '#7caedd', emoji: '🏛️' },
   destination: { color: '#97bee0', emoji: '📍' },
-  hotel: { color: '#b1c6da', emoji: '🏨' },
+  hotel: { color: '#8da8c4', emoji: '🏨' },
   activity: { color: '#6c9bc9', emoji: '⚡' },
+  visite: { color: '#5f96c7', emoji: '🗺️' },
+  repas: { color: '#d59f52', emoji: '🍽️' },
+  activité: { color: '#6c9bc9', emoji: '🎯' },
+  transport: { color: '#4f7aa3', emoji: '🚌' },
 };
 
 interface Place {
@@ -45,6 +72,7 @@ interface Place {
   lat: number;
   lng: number;
   category: string;
+  time?: string;
   description?: string;
   image?: string;
 }
@@ -54,6 +82,7 @@ interface Props {
   center?: [number, number];
   zoom?: number;
   showPath?: boolean;
+  animateWalker?: boolean;
 }
 
 function ChangeView({ center, zoom }: { center: [number, number]; zoom: number }) {
@@ -64,10 +93,59 @@ function ChangeView({ center, zoom }: { center: [number, number]; zoom: number }
   return null;
 }
 
-export default function MapContent({ places = [], center = [33.8869, 9.5375], zoom = 6, showPath }: Props) {
-  const polylinePath = showPath && places.length > 1
-    ? places.map(p => [p.lat, p.lng] as [number, number])
-    : [];
+export default function MapContent({ places = [], center = [33.8869, 9.5375], zoom = 6, showPath, animateWalker }: Props) {
+  const polylinePath = useMemo(
+    () =>
+      showPath && places.length > 1
+        ? places.map((place) => [place.lat, place.lng] as [number, number])
+        : [],
+    [places, showPath]
+  );
+  const [walkerPosition, setWalkerPosition] = useState<[number, number] | null>(null);
+
+  useEffect(() => {
+    if (!animateWalker || polylinePath.length < 2) {
+      setWalkerPosition(null);
+      return;
+    }
+
+    let segmentIndex = 0;
+    let segmentProgress = 0;
+    setWalkerPosition(polylinePath[0]);
+
+    const intervalId = window.setInterval(() => {
+      const start = polylinePath[segmentIndex];
+      const end = polylinePath[segmentIndex + 1];
+
+      if (!start || !end) {
+        segmentIndex = 0;
+        segmentProgress = 0;
+        setWalkerPosition(polylinePath[0]);
+        return;
+      }
+
+      segmentProgress += 0.25;
+
+      if (segmentProgress >= 1) {
+        segmentIndex += 1;
+        segmentProgress = 0;
+
+        if (segmentIndex >= polylinePath.length - 1) {
+          segmentIndex = 0;
+        }
+      }
+
+      const from = polylinePath[segmentIndex];
+      const to = polylinePath[segmentIndex + 1] || polylinePath[0];
+      const lat = from[0] + (to[0] - from[0]) * segmentProgress;
+      const lng = from[1] + (to[1] - from[1]) * segmentProgress;
+      setWalkerPosition([lat, lng]);
+    }, 900);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [animateWalker, polylinePath]);
 
   return (
     <MapContainer
@@ -94,7 +172,7 @@ export default function MapContent({ places = [], center = [33.8869, 9.5375], zo
 
       {places.map((place, idx) => {
         const iconInfo = CATEGORY_ICONS[place.category] || CATEGORY_ICONS.destination;
-        const icon = createCustomIcon(iconInfo.color, showPath ? String(idx + 1) : iconInfo.emoji);
+        const icon = createCustomIcon(iconInfo.color, iconInfo.emoji, showPath ? String(idx + 1) : undefined);
 
         return (
           <Marker key={place.id} position={[place.lat, place.lng]} icon={icon}>
@@ -106,6 +184,9 @@ export default function MapContent({ places = [], center = [33.8869, 9.5375], zo
                   </div>
                 )}
                 <h3 className="font-semibold text-midnight text-base mb-1">{place.name}</h3>
+                {place.time && (
+                  <p className="text-xs text-terracotta-600 font-semibold mb-1">{place.time}</p>
+                )}
                 {place.description && (
                   <p className="text-xs text-midnight/60 leading-relaxed">{place.description}</p>
                 )}
@@ -119,6 +200,14 @@ export default function MapContent({ places = [], center = [33.8869, 9.5375], zo
           </Marker>
         );
       })}
+
+      {showPath && animateWalker && walkerPosition && (
+        <Marker position={walkerPosition} icon={walkerIcon}>
+          <Popup>
+            <p className="font-body text-sm">Guide en déplacement sur l&apos;itinéraire</p>
+          </Popup>
+        </Marker>
+      )}
     </MapContainer>
   );
 }

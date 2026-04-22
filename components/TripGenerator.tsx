@@ -1,33 +1,38 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, DollarSign, Clock, Heart, ChevronRight } from 'lucide-react';
+import {
+  Sparkles,
+  DollarSign,
+  CalendarRange,
+  Heart,
+  ChevronRight,
+  MapPinned,
+  CheckCircle2,
+  Clock3,
+} from 'lucide-react';
 import { useCurrency } from '@/context/CurrencyContext';
-
-const INTERESTS = [
-  { id: 'plage', label: '🏖️ Plage', desc: 'Côtes & mer' },
-  { id: 'désert', label: '🏜️ Désert', desc: 'Sahara & dunes' },
-  { id: 'culture', label: '🏛️ Culture', desc: 'Musées & art' },
-  { id: 'histoire', label: '🏺 Histoire', desc: 'Antiquités' },
-  { id: 'gastronomie', label: '🍽️ Gastronomie', desc: 'Cuisine locale' },
-  { id: 'nature', label: '🌿 Nature', desc: 'Forêts & montagnes' },
-  { id: 'aventure', label: '🧗 Aventure', desc: 'Sports & trek' },
-  { id: 'spirituel', label: '🕌 Spirituel', desc: 'Lieux sacrés' },
-];
-
-type TransportPreference = 'has-transport' | 'need-transport' | 'no-preference';
-
-const TRANSPORT_OPTIONS: Array<{ id: TransportPreference; label: string; desc: string; emoji: string }> = [
-  { id: 'has-transport', label: 'J’ai déjà un transport', desc: 'Voiture perso / transport déjà réservé', emoji: '🚗' },
-  { id: 'need-transport', label: 'Je veux un transport', desc: 'Je souhaite des options de transfert', emoji: '🚌' },
-  { id: 'no-preference', label: 'Peu importe', desc: 'L’IA décide selon l’itinéraire', emoji: '🧭' },
-];
+import {
+  INTERESTS,
+  REGION_OPTIONS,
+  TRANSPORT_OPTIONS,
+  addDays,
+  calculateDuration,
+  dateToInputValue,
+  getRecommendedExperiences,
+  getSuggestedRegions,
+  type TransportPreference,
+} from '@/lib/tripPlanner';
 
 export interface TripGeneratorInput {
   budget: number;
   duration: number;
+  startDate: string;
+  endDate: string;
   interests: string[];
+  regions: string[];
+  selectedExperienceIds: string[];
   preferences: {
     includeWorkshops: boolean;
     transportPreference: TransportPreference;
@@ -41,11 +46,17 @@ interface Props {
   onReset?: () => void;
 }
 
+const tomorrow = dateToInputValue(new Date(Date.now() + 24 * 60 * 60 * 1000));
+
 export default function TripGenerator({ onTripGenerated, onReset }: Props) {
   const { format } = useCurrency();
-  const [budget, setBudget] = useState(2000);
+  const [budget, setBudget] = useState(2600);
+  const [startDate, setStartDate] = useState(tomorrow);
+  const [endDate, setEndDate] = useState(addDays(tomorrow, 4));
   const [duration, setDuration] = useState(5);
-  const [selectedInterests, setSelectedInterests] = useState<string[]>(['culture', 'gastronomie']);
+  const [selectedInterests, setSelectedInterests] = useState<string[]>(['culture', 'gastronomie', 'artisanat']);
+  const [selectedRegions, setSelectedRegions] = useState<string[]>(['Grand Tunis', 'Nabeul']);
+  const [selectedExperienceIds, setSelectedExperienceIds] = useState<string[]>(['cooking-tunis', 'pottery-nabeul']);
   const [includeWorkshops, setIncludeWorkshops] = useState(true);
   const [transportPreference, setTransportPreference] = useState<TransportPreference>('no-preference');
   const [wantsGuide, setWantsGuide] = useState(true);
@@ -53,45 +64,83 @@ export default function TripGenerator({ onTripGenerated, onReset }: Props) {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
 
+  useEffect(() => {
+    setDuration(calculateDuration(startDate, endDate));
+  }, [startDate, endDate]);
+
+  const suggestedRegions = useMemo(() => getSuggestedRegions(selectedInterests), [selectedInterests]);
+  const recommendedExperiences = useMemo(
+    () =>
+      getRecommendedExperiences({
+        selectedInterests,
+        selectedRegions,
+        limit: 8,
+      }),
+    [selectedInterests, selectedRegions]
+  );
+
+  useEffect(() => {
+    if (selectedRegions.length === 0 && suggestedRegions.length > 0) {
+      setSelectedRegions(suggestedRegions.slice(0, 2));
+    }
+  }, [selectedRegions.length, suggestedRegions]);
+
   const toggleInterest = (id: string) => {
-    setSelectedInterests(prev =>
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    setSelectedInterests((previous) =>
+      previous.includes(id) ? previous.filter((interest) => interest !== id) : [...previous, id]
     );
   };
 
-  const generateTrip = async () => {
-    if (selectedInterests.length === 0) return;
+  const toggleRegion = (region: string) => {
+    setSelectedRegions((previous) =>
+      previous.includes(region) ? previous.filter((item) => item !== region) : [...previous, region]
+    );
+  };
+
+  const toggleExperience = (id: string) => {
+    setSelectedExperienceIds((previous) =>
+      previous.includes(id) ? previous.filter((item) => item !== id) : [...previous, id]
+    );
+  };
+
+  const handleDurationPreset = (days: number) => {
+    setEndDate(addDays(startDate, days - 1));
+    setDuration(days);
+  };
+
+  const handleGenerateTrip = async () => {
+    if (selectedInterests.length === 0) {
+      return;
+    }
+
     setLoading(true);
     try {
-      const res = await fetch('/api/generate-trip', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          budget,
-          duration,
-          interests: selectedInterests,
-          preferences: {
-            includeWorkshops,
-            transportPreference,
-            wantsGuide,
-            notes: extraPreferences.trim(),
-          },
-        }),
-      });
-      const trip = await res.json();
-      onTripGenerated(trip, {
+      const input: TripGeneratorInput = {
         budget,
         duration,
+        startDate,
+        endDate,
         interests: selectedInterests,
+        regions: selectedRegions,
+        selectedExperienceIds,
         preferences: {
           includeWorkshops,
           transportPreference,
           wantsGuide,
           notes: extraPreferences.trim(),
         },
+      };
+
+      const response = await fetch('/api/generate-trip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
       });
-    } catch (err) {
-      console.error(err);
+
+      const trip = await response.json();
+      onTripGenerated(trip, input);
+    } catch (error) {
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -99,8 +148,7 @@ export default function TripGenerator({ onTripGenerated, onReset }: Props) {
 
   return (
     <section id="trip" className="py-24 px-6">
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
+      <div className="max-w-6xl mx-auto">
         <motion.div
           initial={false}
           whileInView={{ opacity: 1, y: 0 }}
@@ -110,18 +158,17 @@ export default function TripGenerator({ onTripGenerated, onReset }: Props) {
         >
           <div className="inline-flex items-center gap-2 bg-terracotta-50 border border-terracotta-200 text-terracotta-600 text-sm font-medium px-4 py-2 rounded-full mb-6">
             <Sparkles size={14} />
-            Propulsé par l'Intelligence Artificielle
+            Propulsé par l&apos;Intelligence Artificielle
           </div>
           <h2 className="font-display text-5xl md:text-6xl font-light text-midnight mb-5">
             Votre voyage,
             <span className="text-terracotta-500 italic"> personnalisé</span>
           </h2>
-          <p className="font-body text-lg text-midnight/60 max-w-xl mx-auto">
-            Décrivez vos envies, notre IA compose un itinéraire sur mesure adapté à votre budget et vos intérêts.
+          <p className="font-body text-lg text-midnight/60 max-w-2xl mx-auto">
+            Choisissez vos dates, vos régions, vos centres d&apos;intérêt et les expériences que vous voulez vraiment voir apparaître dans le plan final.
           </p>
         </motion.div>
 
-        {/* Generator Card */}
         <motion.div
           initial={false}
           whileInView={{ opacity: 1, y: 0 }}
@@ -129,23 +176,22 @@ export default function TripGenerator({ onTripGenerated, onReset }: Props) {
           transition={{ duration: 0.7, delay: 0.1 }}
           className="bg-white rounded-5xl shadow-xl border border-sand-100 overflow-hidden"
         >
-          {/* Progress */}
-          <div className="flex border-b border-sand-100">
+          <div className="flex border-b border-sand-100 overflow-x-auto">
             {[
-              { n: 1, label: 'Budget & Durée', icon: DollarSign },
+              { n: 1, label: 'Dates & Budget', icon: CalendarRange },
               { n: 2, label: 'Intérêts', icon: Heart },
-              { n: 3, label: 'Préférences', icon: Heart },
+              { n: 3, label: 'Régions & Activités', icon: MapPinned },
               { n: 4, label: 'Génération', icon: Sparkles },
             ].map(({ n, label, icon: Icon }) => (
               <button
                 key={n}
                 onClick={() => n < 4 && setStep(n)}
-                className={`flex-1 flex items-center justify-center gap-2 py-5 text-sm font-medium transition-colors ${
+                className={`flex-1 min-w-[170px] flex items-center justify-center gap-2 py-5 text-sm font-medium transition-colors ${
                   step === n
                     ? 'bg-terracotta-50 text-terracotta-600 border-b-2 border-terracotta-500'
                     : step > n
-                    ? 'text-olive-600 bg-olive-50/50'
-                    : 'text-midnight/40'
+                      ? 'text-olive-600 bg-olive-50/50'
+                      : 'text-midnight/40'
                 }`}
               >
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
@@ -153,14 +199,14 @@ export default function TripGenerator({ onTripGenerated, onReset }: Props) {
                 }`}>
                   {step > n ? '✓' : n}
                 </div>
-                <span className="hidden sm:block">{label}</span>
+                <Icon size={15} />
+                <span>{label}</span>
               </button>
             ))}
           </div>
 
           <div className="p-8 md:p-12">
             <AnimatePresence mode="wait">
-              {/* Step 1: Budget & Duration */}
               {step === 1 && (
                 <motion.div
                   key="step1"
@@ -170,55 +216,119 @@ export default function TripGenerator({ onTripGenerated, onReset }: Props) {
                   transition={{ duration: 0.3 }}
                   className="space-y-10"
                 >
-                  {/* Budget Slider */}
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <label className="flex items-center gap-2 font-body font-semibold text-midnight">
-                        <DollarSign size={18} className="text-terracotta-500" />
-                        Budget total
-                      </label>
-                      <div className="bg-sand-100 px-4 py-2 rounded-xl">
-                        <span className="font-display text-2xl font-semibold text-terracotta-500">
-                          {format(budget)}
-                        </span>
+                  <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-8">
+                    <div className="space-y-8">
+                      <div>
+                        <div className="flex items-center justify-between mb-4">
+                          <label className="flex items-center gap-2 font-body font-semibold text-midnight">
+                            <DollarSign size={18} className="text-terracotta-500" />
+                            Budget total
+                          </label>
+                          <div className="bg-sand-100 px-4 py-2 rounded-xl">
+                            <span className="font-display text-2xl font-semibold text-terracotta-500">
+                              {format(budget)}
+                            </span>
+                          </div>
+                        </div>
+                        <input
+                          type="range"
+                          min={700}
+                          max={12000}
+                          step={100}
+                          value={budget}
+                          onChange={(event) => setBudget(Number(event.target.value))}
+                          className="w-full h-2 bg-sand-200 rounded-full appearance-none cursor-pointer accent-terracotta-500"
+                        />
+                        <div className="flex justify-between text-xs text-midnight/40 mt-2 font-body">
+                          <span>{format(700)}</span>
+                          <span>{format(12000)}</span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="flex items-center gap-2 font-body font-semibold text-midnight mb-5">
+                          <CalendarRange size={18} className="text-terracotta-500" />
+                          Dates du séjour
+                        </label>
+                        <div className="grid sm:grid-cols-2 gap-4">
+                          <div className="bg-sand-50 rounded-3xl border border-sand-200 p-5">
+                            <label className="block text-xs font-body uppercase tracking-wide text-midnight/40 mb-2">
+                              Départ
+                            </label>
+                            <input
+                              type="date"
+                              value={startDate}
+                              min={tomorrow}
+                              onChange={(event) => {
+                                const value = event.target.value;
+                                setStartDate(value);
+                                if (value > endDate) {
+                                  setEndDate(value);
+                                }
+                              }}
+                              className="w-full bg-white border border-sand-200 rounded-2xl px-4 py-3 font-body text-sm text-midnight focus:outline-none focus:border-terracotta-400"
+                            />
+                          </div>
+
+                          <div className="bg-sand-50 rounded-3xl border border-sand-200 p-5">
+                            <label className="block text-xs font-body uppercase tracking-wide text-midnight/40 mb-2">
+                              Retour
+                            </label>
+                            <input
+                              type="date"
+                              value={endDate}
+                              min={startDate}
+                              onChange={(event) => setEndDate(event.target.value)}
+                              className="w-full bg-white border border-sand-200 rounded-2xl px-4 py-3 font-body text-sm text-midnight focus:outline-none focus:border-terracotta-400"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="flex items-center gap-2 font-body font-semibold text-midnight mb-5">
+                          <Clock3 size={18} className="text-terracotta-500" />
+                          Ajuster la durée rapidement
+                        </label>
+                        <div className="grid grid-cols-4 sm:grid-cols-7 gap-3">
+                          {[3, 4, 5, 6, 7, 10, 12].map((days) => (
+                            <button
+                              key={days}
+                              onClick={() => handleDurationPreset(days)}
+                              className={`flex flex-col items-center py-4 px-2 rounded-2xl border-2 transition-all font-body ${
+                                duration === days
+                                  ? 'border-terracotta-500 bg-terracotta-50 text-terracotta-600'
+                                  : 'border-sand-200 hover:border-sand-300 text-midnight/60'
+                              }`}
+                            >
+                              <span className="text-xl font-bold">{days}</span>
+                              <span className="text-xs mt-1">jours</span>
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                    <input
-                      type="range"
-                      min={500}
-                      max={10000}
-                      step={100}
-                      value={budget}
-                      onChange={e => setBudget(Number(e.target.value))}
-                      className="w-full h-2 bg-sand-200 rounded-full appearance-none cursor-pointer accent-terracotta-500"
-                    />
-                    <div className="flex justify-between text-xs text-midnight/40 mt-2 font-body">
-                      <span>{format(500)}</span>
-                      <span>{format(10000)}</span>
-                    </div>
-                  </div>
 
-                  {/* Duration */}
-                  <div>
-                    <label className="flex items-center gap-2 font-body font-semibold text-midnight mb-6">
-                      <Clock size={18} className="text-terracotta-500" />
-                      Durée du séjour
-                    </label>
-                    <div className="grid grid-cols-4 sm:grid-cols-7 gap-3">
-                      {[1, 2, 3, 4, 5, 7, 10].map(d => (
-                        <button
-                          key={d}
-                          onClick={() => setDuration(d)}
-                          className={`flex flex-col items-center py-4 px-2 rounded-2xl border-2 transition-all font-body ${
-                            duration === d
-                              ? 'border-terracotta-500 bg-terracotta-50 text-terracotta-600'
-                              : 'border-sand-200 hover:border-sand-300 text-midnight/60'
-                          }`}
-                        >
-                          <span className="text-xl font-bold">{d}</span>
-                          <span className="text-xs mt-1">{d === 1 ? 'jour' : 'jours'}</span>
-                        </button>
-                      ))}
+                    <div className="surface-card p-6">
+                      <span className="tag mb-4 inline-flex">Synthèse instantanée</span>
+                      <h3 className="font-display text-3xl font-light text-midnight mb-4">
+                        {duration} jours bien
+                        <span className="text-terracotta-500 italic"> planifiés</span>
+                      </h3>
+                      <div className="space-y-4 font-body text-sm text-midnight/65">
+                        <div className="bg-sand-50 rounded-2xl p-4 border border-sand-200">
+                          <p className="text-midnight/40 text-xs mb-1">Fenêtre de voyage</p>
+                          <p>{new Date(startDate).toLocaleDateString('fr-FR')} → {new Date(endDate).toLocaleDateString('fr-FR')}</p>
+                        </div>
+                        <div className="bg-sand-50 rounded-2xl p-4 border border-sand-200">
+                          <p className="text-midnight/40 text-xs mb-1">Budget moyen par jour</p>
+                          <p>{format(Math.round(budget / duration))}</p>
+                        </div>
+                        <div className="bg-sand-50 rounded-2xl p-4 border border-sand-200">
+                          <p className="text-midnight/40 text-xs mb-1">Style attendu</p>
+                          <p>Plan détaillé avec activités, horaires, hôtels et carte par journée.</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -231,7 +341,6 @@ export default function TripGenerator({ onTripGenerated, onReset }: Props) {
                 </motion.div>
               )}
 
-              {/* Step 2: Interests */}
               {step === 2 && (
                 <motion.div
                   key="step2"
@@ -244,11 +353,13 @@ export default function TripGenerator({ onTripGenerated, onReset }: Props) {
                   <div>
                     <label className="flex items-center gap-2 font-body font-semibold text-midnight mb-2">
                       <Heart size={18} className="text-terracotta-500" />
-                      Vos centres d'intérêt
+                      Vos centres d&apos;intérêt
                     </label>
-                    <p className="text-sm text-midnight/50 font-body mb-6">Sélectionnez tout ce qui vous inspire</p>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      {INTERESTS.map(interest => (
+                    <p className="text-sm text-midnight/50 font-body mb-6">
+                      Sélectionnez tout ce qui doit influencer l&apos;itinéraire et les activités proposées.
+                    </p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
+                      {INTERESTS.map((interest) => (
                         <button
                           key={interest.id}
                           onClick={() => toggleInterest(interest.id)}
@@ -263,6 +374,44 @@ export default function TripGenerator({ onTripGenerated, onReset }: Props) {
                             {interest.label.split(' ').slice(1).join(' ')}
                           </span>
                           <span className="text-xs text-midnight/40 mt-1">{interest.desc}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="flex items-center gap-2 font-body font-semibold text-midnight mb-2">
+                      <MapPinned size={18} className="text-terracotta-500" />
+                      Régions à visiter
+                    </label>
+                    <p className="text-sm text-midnight/50 font-body mb-4">
+                      Choisissez les régions à privilégier. L&apos;IA concentrera le parcours sur ces zones.
+                    </p>
+                    {suggestedRegions.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {suggestedRegions.map((region) => (
+                          <button
+                            key={region}
+                            onClick={() => toggleRegion(region)}
+                            className="tag hover:bg-terracotta-50 transition-colors"
+                          >
+                            Suggestion IA: {region}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex flex-wrap gap-2">
+                      {REGION_OPTIONS.map((region) => (
+                        <button
+                          key={region}
+                          onClick={() => toggleRegion(region)}
+                          className={`px-4 py-2 rounded-2xl text-sm font-body font-medium transition-colors ${
+                            selectedRegions.includes(region)
+                              ? 'bg-midnight text-white'
+                              : 'bg-sand-50 border border-sand-200 text-midnight/70 hover:border-sand-300'
+                          }`}
+                        >
+                          {region}
                         </button>
                       ))}
                     </div>
@@ -284,7 +433,6 @@ export default function TripGenerator({ onTripGenerated, onReset }: Props) {
                 </motion.div>
               )}
 
-              {/* Step 3: Preferences */}
               {step === 3 && (
                 <motion.div
                   key="step3"
@@ -292,93 +440,162 @@ export default function TripGenerator({ onTripGenerated, onReset }: Props) {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="space-y-8"
+                  className="space-y-10"
                 >
-                  <div className="space-y-6">
-                    <div>
-                      <p className="font-body font-semibold text-midnight mb-3">Souhaitez-vous des workshops (ateliers) ?</p>
-                      <div className="grid grid-cols-2 gap-3">
-                        <button
-                          onClick={() => setIncludeWorkshops(true)}
-                          className={`rounded-2xl border-2 px-4 py-4 text-left transition-all ${
-                            includeWorkshops
-                              ? 'border-terracotta-500 bg-terracotta-50 text-terracotta-700'
-                              : 'border-sand-200 bg-white text-midnight/70 hover:border-sand-300'
-                          }`}
-                        >
-                          <p className="font-body font-semibold text-sm">Oui, ajoutez des ateliers</p>
-                          <p className="text-xs font-body mt-1 opacity-80">Cuisine, artisanat, activités créatives</p>
-                        </button>
-                        <button
-                          onClick={() => setIncludeWorkshops(false)}
-                          className={`rounded-2xl border-2 px-4 py-4 text-left transition-all ${
-                            !includeWorkshops
-                              ? 'border-terracotta-500 bg-terracotta-50 text-terracotta-700'
-                              : 'border-sand-200 bg-white text-midnight/70 hover:border-sand-300'
-                          }`}
-                        >
-                          <p className="font-body font-semibold text-sm">Non, pas nécessaire</p>
-                          <p className="text-xs font-body mt-1 opacity-80">Plutôt visites classiques et détente</p>
-                        </button>
+                  <div>
+                    <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
+                      <div>
+                        <label className="flex items-center gap-2 font-body font-semibold text-midnight mb-2">
+                          <Sparkles size={18} className="text-terracotta-500" />
+                          Activités recommandées à injecter dans le plan
+                        </label>
+                        <p className="text-sm text-midnight/50 font-body">
+                          Cochez celles que vous voulez voir apparaître en priorité dans l&apos;itinéraire final.
+                        </p>
                       </div>
+                      <span className="tag">{selectedExperienceIds.length} activité{selectedExperienceIds.length > 1 ? 's' : ''} choisie{selectedExperienceIds.length > 1 ? 's' : ''}</span>
                     </div>
 
-                    <div>
-                      <p className="font-body font-semibold text-midnight mb-3">Transport</p>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        {TRANSPORT_OPTIONS.map((option) => (
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {recommendedExperiences.map((experience) => {
+                        const selected = selectedExperienceIds.includes(experience.id);
+                        return (
                           <button
-                            key={option.id}
-                            onClick={() => setTransportPreference(option.id)}
+                            key={experience.id}
+                            onClick={() => toggleExperience(experience.id)}
+                            className={`text-left rounded-4xl border overflow-hidden transition-all ${
+                              selected
+                                ? 'border-terracotta-400 bg-terracotta-50 shadow-lg shadow-terracotta-100/60'
+                                : 'border-sand-100 bg-white hover:border-sand-200'
+                            }`}
+                          >
+                            <div className="relative h-48">
+                              <img src={experience.image} alt={experience.name} className="w-full h-full object-cover" />
+                              <div className="absolute inset-0 bg-gradient-to-t from-midnight/60 via-midnight/10 to-transparent" />
+                              <div className="absolute top-4 right-4">
+                                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center backdrop-blur-sm ${
+                                  selected ? 'bg-white text-terracotta-500' : 'bg-black/25 text-white'
+                                }`}>
+                                  <CheckCircle2 size={18} />
+                                </div>
+                              </div>
+                              <div className="absolute bottom-4 left-4 right-4">
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                  <span className="bg-white/85 text-midnight text-xs px-2.5 py-1 rounded-full font-body font-medium">
+                                    {experience.region}
+                                  </span>
+                                  <span className="bg-olive-50/90 text-olive-700 text-xs px-2.5 py-1 rounded-full font-body font-medium">
+                                    {experience.socialImpactPercent}% impact local
+                                  </span>
+                                </div>
+                                <h4 className="font-display text-2xl text-white">{experience.name}</h4>
+                              </div>
+                            </div>
+                            <div className="p-5 space-y-3">
+                              <p className="font-body text-sm text-midnight/60 leading-relaxed">{experience.description}</p>
+                              <div className="flex flex-wrap gap-2 text-xs font-body text-midnight/55">
+                                <span className="tag">{experience.duration}</span>
+                                <span className="tag">{format(experience.price)}</span>
+                                <span className="tag">{experience.artisansSupported} artisans aidés</span>
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="grid lg:grid-cols-2 gap-6">
+                    <div className="space-y-6">
+                      <div>
+                        <p className="font-body font-semibold text-midnight mb-3">Souhaitez-vous des workshops ?</p>
+                        <div className="grid grid-cols-2 gap-3">
+                          <button
+                            onClick={() => setIncludeWorkshops(true)}
                             className={`rounded-2xl border-2 px-4 py-4 text-left transition-all ${
-                              transportPreference === option.id
+                              includeWorkshops
                                 ? 'border-terracotta-500 bg-terracotta-50 text-terracotta-700'
                                 : 'border-sand-200 bg-white text-midnight/70 hover:border-sand-300'
                             }`}
                           >
-                            <p className="font-body font-semibold text-sm">{option.emoji} {option.label}</p>
-                            <p className="text-xs font-body mt-1 opacity-80">{option.desc}</p>
+                            <p className="font-body font-semibold text-sm">Oui, ajoutez des ateliers</p>
+                            <p className="text-xs font-body mt-1 opacity-80">Cuisine, artisanat, création locale</p>
                           </button>
-                        ))}
+                          <button
+                            onClick={() => setIncludeWorkshops(false)}
+                            className={`rounded-2xl border-2 px-4 py-4 text-left transition-all ${
+                              !includeWorkshops
+                                ? 'border-terracotta-500 bg-terracotta-50 text-terracotta-700'
+                                : 'border-sand-200 bg-white text-midnight/70 hover:border-sand-300'
+                            }`}
+                          >
+                            <p className="font-body font-semibold text-sm">Non, plutôt visites</p>
+                            <p className="text-xs font-body mt-1 opacity-80">Plus de temps pour explorer librement</p>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <p className="font-body font-semibold text-midnight mb-3">Transport</p>
+                        <div className="grid grid-cols-1 gap-3">
+                          {TRANSPORT_OPTIONS.map((option) => (
+                            <button
+                              key={option.id}
+                              onClick={() => setTransportPreference(option.id)}
+                              className={`rounded-2xl border-2 px-4 py-4 text-left transition-all ${
+                                transportPreference === option.id
+                                  ? 'border-terracotta-500 bg-terracotta-50 text-terracotta-700'
+                                  : 'border-sand-200 bg-white text-midnight/70 hover:border-sand-300'
+                              }`}
+                            >
+                              <p className="font-body font-semibold text-sm">{option.emoji} {option.label}</p>
+                              <p className="text-xs font-body mt-1 opacity-80">{option.desc}</p>
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
 
-                    <div>
-                      <p className="font-body font-semibold text-midnight mb-3">Guide local</p>
-                      <div className="grid grid-cols-2 gap-3">
-                        <button
-                          onClick={() => setWantsGuide(true)}
-                          className={`rounded-2xl border-2 px-4 py-4 text-left transition-all ${
-                            wantsGuide
-                              ? 'border-terracotta-500 bg-terracotta-50 text-terracotta-700'
-                              : 'border-sand-200 bg-white text-midnight/70 hover:border-sand-300'
-                          }`}
-                        >
-                          <p className="font-body font-semibold text-sm">Oui, je veux un guide</p>
-                          <p className="text-xs font-body mt-1 opacity-80">Visites guidées et conseils d’expert</p>
-                        </button>
-                        <button
-                          onClick={() => setWantsGuide(false)}
-                          className={`rounded-2xl border-2 px-4 py-4 text-left transition-all ${
-                            !wantsGuide
-                              ? 'border-terracotta-500 bg-terracotta-50 text-terracotta-700'
-                              : 'border-sand-200 bg-white text-midnight/70 hover:border-sand-300'
-                          }`}
-                        >
-                          <p className="font-body font-semibold text-sm">Non, je préfère en autonomie</p>
-                          <p className="text-xs font-body mt-1 opacity-80">Parcours libre sans accompagnement</p>
-                        </button>
+                    <div className="space-y-6">
+                      <div>
+                        <p className="font-body font-semibold text-midnight mb-3">Guide local</p>
+                        <div className="grid grid-cols-2 gap-3">
+                          <button
+                            onClick={() => setWantsGuide(true)}
+                            className={`rounded-2xl border-2 px-4 py-4 text-left transition-all ${
+                              wantsGuide
+                                ? 'border-terracotta-500 bg-terracotta-50 text-terracotta-700'
+                                : 'border-sand-200 bg-white text-midnight/70 hover:border-sand-300'
+                            }`}
+                          >
+                            <p className="font-body font-semibold text-sm">Oui, je veux un guide</p>
+                            <p className="text-xs font-body mt-1 opacity-80">Pour mieux comprendre les lieux et les rencontres</p>
+                          </button>
+                          <button
+                            onClick={() => setWantsGuide(false)}
+                            className={`rounded-2xl border-2 px-4 py-4 text-left transition-all ${
+                              !wantsGuide
+                                ? 'border-terracotta-500 bg-terracotta-50 text-terracotta-700'
+                                : 'border-sand-200 bg-white text-midnight/70 hover:border-sand-300'
+                            }`}
+                          >
+                            <p className="font-body font-semibold text-sm">Non, plus autonome</p>
+                            <p className="text-xs font-body mt-1 opacity-80">Parcours plus libre avec repères précis</p>
+                          </button>
+                        </div>
                       </div>
-                    </div>
 
-                    <div>
-                      <label className="font-body font-semibold text-midnight mb-2 block">Autres préférences (optionnel)</label>
-                      <textarea
-                        value={extraPreferences}
-                        onChange={(e) => setExtraPreferences(e.target.value)}
-                        placeholder="Ex: hôtel calme, activités famille, peu de marche, préférence poisson, etc."
-                        className="w-full min-h-28 bg-white border border-sand-200 rounded-2xl px-4 py-3 font-body text-sm text-midnight placeholder-midnight/35 focus:outline-none focus:border-terracotta-400 transition-colors resize-y"
-                      />
+                      <div>
+                        <label className="font-body font-semibold text-midnight mb-2 block">
+                          Détails supplémentaires
+                        </label>
+                        <textarea
+                          value={extraPreferences}
+                          onChange={(event) => setExtraPreferences(event.target.value)}
+                          placeholder="Ex: peu de marche, hôtel avec spa, plus d'artisanat, rythme doux, voyage photo..."
+                          className="w-full min-h-36 bg-white border border-sand-200 rounded-2xl px-4 py-3 font-body text-sm text-midnight placeholder-midnight/35 focus:outline-none focus:border-terracotta-400 transition-colors resize-y"
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -387,7 +604,10 @@ export default function TripGenerator({ onTripGenerated, onReset }: Props) {
                       Retour
                     </button>
                     <button
-                      onClick={() => { setStep(4); generateTrip(); }}
+                      onClick={() => {
+                        setStep(4);
+                        void handleGenerateTrip();
+                      }}
                       className="btn-primary flex items-center gap-2"
                     >
                       <Sparkles size={16} />
@@ -396,7 +616,7 @@ export default function TripGenerator({ onTripGenerated, onReset }: Props) {
                   </div>
                 </motion.div>
               )}
-              {/* Step 4: Loading */}
+
               {step === 4 && (
                 <motion.div
                   key="step4"
@@ -411,27 +631,32 @@ export default function TripGenerator({ onTripGenerated, onReset }: Props) {
                         <div className="w-24 h-24 rounded-full border-4 border-sand-200" />
                         <div className="absolute inset-0 w-24 h-24 rounded-full border-4 border-terracotta-500 border-t-transparent animate-spin" />
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-3xl">✈️</span>
+                          <span className="text-3xl">🧭</span>
                         </div>
                       </div>
                       <div className="text-center">
                         <p className="font-display text-2xl font-light text-midnight mb-2">
-                          Composition de votre voyage…
+                          Planification de votre séjour…
                         </p>
                         <p className="font-body text-midnight/50 text-sm">
-                          Notre IA explore les meilleurs itinéraires pour vous
+                          Gemini orchestre dates, régions, activités choisies, impact local et carte de trajet.
                         </p>
                       </div>
-                      <div className="flex gap-2">
-                        {['Recherche des hôtels', 'Sélection des activités', 'Optimisation du budget'].map((t, i) => (
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {[
+                          'Vérification des régions',
+                          'Insertion des activités cochées',
+                          'Optimisation des horaires',
+                          'Valorisation de l’impact local',
+                        ].map((text, index) => (
                           <motion.span
-                            key={t}
+                            key={text}
                             initial={false}
                             animate={{ opacity: [0, 1, 0] }}
-                            transition={{ duration: 2, delay: i * 0.6, repeat: Infinity }}
+                            transition={{ duration: 2.3, delay: index * 0.4, repeat: Infinity }}
                             className="tag"
                           >
-                            {t}
+                            {text}
                           </motion.span>
                         ))}
                       </div>
@@ -443,10 +668,10 @@ export default function TripGenerator({ onTripGenerated, onReset }: Props) {
                       </div>
                       <div className="text-center">
                         <p className="font-display text-2xl font-light text-midnight mb-2">
-                          Votre itinéraire est prêt !
+                          Votre itinéraire détaillé est prêt
                         </p>
                         <p className="font-body text-midnight/50 text-sm">
-                          Découvrez votre voyage personnalisé ci-dessous
+                          Dates confirmées, activités choisies injectées, impact local estimé et carte par journée disponibles ci-dessous.
                         </p>
                       </div>
                       <button

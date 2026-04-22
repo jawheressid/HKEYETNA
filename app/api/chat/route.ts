@@ -6,15 +6,15 @@ type ChatMessage = {
   content: string;
 };
 
-const getChatModel = (systemInstruction: string) => {
-  const apiKey = process.env.GEMINI_API_KEY;
+const getChatModel = (systemInstruction: string, modelName: string) => {
+  const apiKey = process.env.GEMINI_API_KEY || process.env.GEMINI_API || process.env.gemini_api;
   if (!apiKey) {
     throw new Error('Missing GEMINI_API_KEY environment variable');
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);
   return genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash',
+    model: modelName,
     systemInstruction,
     generationConfig: {
       maxOutputTokens: 500,
@@ -58,18 +58,45 @@ Tu peux aider avec :
 Sois concise (2-4 phrases max par réponse), amicale et utilise occasionnellement des emojis pertinents.
 Si l'utilisateur pose une question hors tourisme tunisien, redirige poliment vers ton domaine.`;
 
-    const model = getChatModel(systemPrompt);
     const historyText = formatHistory(history);
     const prompt = `${historyText ? `Historique récent :\n${historyText}\n\n` : ''}Message utilisateur : ${message}\nRéponse de Hayet :`;
 
-    const response = await model.generateContent(prompt);
-    const reply = response.response.text().trim();
+    const preferredModels = ['gemini-2.0-flash'];
+    let reply = '';
+    let lastModelError: unknown = null;
+
+    for (const modelName of preferredModels) {
+      try {
+        const model = getChatModel(systemPrompt, modelName);
+        const response = await model.generateContent(prompt);
+        reply = response.response.text().trim();
+        if (reply) {
+          break;
+        }
+      } catch (error) {
+        lastModelError = error;
+      }
+    }
+
+    if (!reply) {
+      throw lastModelError || new Error('No chatbot response produced');
+    }
 
     return NextResponse.json({ reply });
   } catch (error) {
     console.error('Chat error:', error);
+
+    const fallbackReplies = [
+      'Je reste disponible pour vos questions sur la Tunisie. Par exemple: transport entre villes, meilleure saison par région, ou activités authentiques selon votre budget.',
+      'Je peux vous proposer un mini-plan local (matin, midi, soir) pour Tunis, Djerba, Douz ou Kairouan. Dites-moi simplement la ville et le nombre de jours.',
+      'Je peux aussi adapter vos activités selon la météo et votre style de voyage (famille, aventure, culture, gastronomie).',
+    ];
+
+    const reply = fallbackReplies[Math.floor(Math.random() * fallbackReplies.length)];
+
     return NextResponse.json({
-      reply: 'Désolée, je rencontre un petit souci technique. Essayez de me poser votre question autrement ! 😊',
+      reply,
+      degraded: true,
     });
   }
 }

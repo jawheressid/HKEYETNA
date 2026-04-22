@@ -25,7 +25,13 @@ async function saveTrip(userId: string, trip: any, input: TripGeneratorInput): P
       highlights: trip.highlights,
       status: 'saved',
       cover_image: coverImage,
-      preferences: input.preferences ?? {},
+      preferences: {
+        ...input.preferences,
+        startDate: input.startDate,
+        endDate: input.endDate,
+        regions: input.regions,
+        selectedExperienceIds: input.selectedExperienceIds,
+      },
       trip_data: trip,
     })
     .select()

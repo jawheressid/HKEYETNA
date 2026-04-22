@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { MapPin } from 'lucide-react';
 
@@ -19,6 +18,7 @@ interface Props {
   center?: [number, number];
   zoom?: number;
   showPath?: boolean;
+  animateWalker?: boolean;
 }
 
 // Dynamically import map to avoid SSR issues
@@ -36,10 +36,10 @@ const MapContent = dynamic(() => import('./MapContent'), {
   )
 });
 
-export default function MapView({ places, center, zoom, showPath }: Props) {
+export default function MapView({ places, center, zoom, showPath, animateWalker }: Props) {
   return (
     <div className="w-full h-full min-h-[400px] rounded-3xl overflow-hidden">
-      <MapContent places={places} center={center} zoom={zoom} showPath={showPath} />
+      <MapContent places={places} center={center} zoom={zoom} showPath={showPath} animateWalker={animateWalker} />
     </div>
   );
 }

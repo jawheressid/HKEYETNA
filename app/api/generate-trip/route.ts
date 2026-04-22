@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { getExperiencesByIds } from '@/lib/tripPlanner';
+import { buildMockTrip, hydrateGeneratedTrip } from '@/lib/tripGenerator';
 
 const getTripModel = () => {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY || process.env.GEMINI_API || process.env.gemini_api;
   if (!apiKey) {
     throw new Error('Missing GEMINI_API_KEY environment variable');
   }
@@ -21,8 +23,10 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}));
 
   try {
-    const { budget, duration, interests, startCity, preferences } = body;
+    const { budget, duration, interests, startCity, startDate, endDate, regions, selectedExperienceIds, preferences } = body;
     const safeInterests = Array.isArray(interests) ? interests : ['culture'];
+    const safeRegions = Array.isArray(regions) ? regions : [];
+    const safeSelectedExperienceIds = Array.isArray(selectedExperienceIds) ? selectedExperienceIds : [];
     const includeWorkshops = Boolean(preferences?.includeWorkshops);
     const transportPreference =
       preferences?.transportPreference === 'has-transport'
@@ -34,14 +38,19 @@ export async function POST(request: NextRequest) {
     const notes = typeof preferences?.notes === 'string' && preferences.notes.trim().length > 0
       ? preferences.notes.trim()
       : 'Aucune note supplémentaire';
+    const selectedExperiences = getExperiencesByIds(safeSelectedExperienceIds);
 
     const prompt = `Tu es un expert en tourisme tunisien. Génère un itinéraire de voyage détaillé en Tunisie.
 
 Paramètres du voyage :
 - Budget total : ${budget} DT
 - Durée : ${duration} jours
+- Départ : ${startDate || 'date libre'}
+- Retour : ${endDate || 'date libre'}
 - Intérêts : ${safeInterests.join(', ')}
+- Régions souhaitées : ${safeRegions.length > 0 ? safeRegions.join(', ') : 'aucune préférence régionale'}
 - Ville de départ : ${startCity || 'Tunis'}
+- Activités impératives choisies par l'utilisateur : ${selectedExperiences.length > 0 ? selectedExperiences.map((experience) => experience.name).join(', ') : 'aucune activité imposée'}
 - Workshops/ateliers : ${includeWorkshops ? 'Oui, inclure des ateliers immersifs' : 'Non, ateliers non prioritaires'}
 - Transport : ${transportPreference}
 - Guide local : ${wantsGuide}
@@ -54,6 +63,7 @@ Génère un itinéraire JSON structuré avec exactement ce format :
   "days": [
     {
       "day": 1,
+      "date": "${startDate || '2026-05-01'}",
       "location": "Nom de la ville",
       "hotel": {
         "name": "Nom de l'hôtel",
@@ -78,13 +88,15 @@ Génère un itinéraire JSON structuré avec exactement ce format :
   "highlights": ["highlight 1", "highlight 2", "highlight 3", "highlight 4"]
 }
 
-Les types d'activités possibles : "visite", "repas", "activité", "hébergement", "transport"
-Inclus 4-5 activités par jour : petit-déjeuner, visite matinale, déjeuner, activité après-midi, dîner.
-Utilise des vrais noms de lieux tunisiens, des prix réalistes en DT.
+Les types d'activités possibles : "visite", "repas", "activité", "hébergement", "transport".
+Inclus 4-5 activités planifiées par jour avec horaires cohérents et villes réalistes.
+Utilise des vrais noms de lieux tunisiens, des prix réalistes en DT et respecte les activités sélectionnées par l'utilisateur quand elles existent.
 Contraintes :
 - Si workshops = oui, inclure au moins un atelier (type "activité") pendant le séjour.
 - Si transport = besoin de transport, inclure des activités de type "transport" (transferts/navettes).
 - Si guide local = oui, mentionner explicitement au moins une activité guidée par jour.
+- Si des régions sont précisées, concentre le voyage prioritairement sur ces régions.
+- Si des dates sont précisées, renseigne le champ "date" de chaque jour.
 Réponds UNIQUEMENT avec le JSON, aucune explication.`;
 
     const model = getTripModel();
@@ -95,16 +107,29 @@ Réponds UNIQUEMENT avec le JSON, aucune explication.`;
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('No JSON found in response');
 
-    const trip = JSON.parse(jsonMatch[0]);
+    const trip = hydrateGeneratedTrip(JSON.parse(jsonMatch[0]), {
+      budget: budget || 1500,
+      duration: duration || 3,
+      interests: safeInterests,
+      startCity,
+      startDate,
+      endDate,
+      regions: safeRegions,
+      selectedExperienceIds: safeSelectedExperienceIds,
+      preferences,
+    });
     return NextResponse.json(trip);
   } catch (error) {
     console.error('Trip generation error:', error);
-    // Return fallback mock data
-    const { buildMockTrip } = await import('@/lib/tripGenerator');
     const fallback = buildMockTrip({
       budget: body.budget || 1500,
       duration: body.duration || 3,
       interests: body.interests || ['culture'],
+      startCity: body.startCity,
+      startDate: body.startDate,
+      endDate: body.endDate,
+      regions: body.regions,
+      selectedExperienceIds: body.selectedExperienceIds,
       preferences: body.preferences,
     });
     return NextResponse.json(fallback);

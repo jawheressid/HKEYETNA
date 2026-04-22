@@ -26,6 +26,7 @@ export default function ChatbotWidget() {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [degradedMode, setDegradedMode] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -49,9 +50,16 @@ export default function ChatbotWidget() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text, history }),
       });
+
+      if (!res.ok) {
+        throw new Error('Chat request failed');
+      }
+
       const data = await res.json();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+      setDegradedMode(Boolean(data.degraded));
+      setMessages(prev => [...prev, { role: 'assistant', content: data.reply || 'Je suis là pour vous aider à planifier votre voyage en Tunisie.' }]);
     } catch {
+      setDegradedMode(true);
       setMessages(prev => [...prev, {
         role: 'assistant',
         content: 'Désolée, connexion perdue. Réessayez ! 🌐',
@@ -116,6 +124,9 @@ export default function ChatbotWidget() {
                   <span className="w-2 h-2 bg-olive-300 rounded-full animate-pulse" />
                   <span className="text-white/70 text-xs font-body">Guide touristique IA</span>
                 </div>
+                {degradedMode && (
+                  <p className="text-[11px] text-white/80 font-body mt-1">Mode secours actif (service Gemini temporairement limité)</p>
+                )}
               </div>
             </div>
 
