@@ -67,10 +67,14 @@ export default function Navbar() {
           <CurrencySwitcher />
           {user ? (
             <Link href="/profile" className="flex items-center gap-2 bg-sand-100 hover:bg-sand-200 px-4 py-2.5 rounded-full transition-colors">
-              <div className="w-7 h-7 rounded-full bg-terracotta-500 flex items-center justify-center">
-                <span className="text-white text-xs font-display font-bold">
-                  {initial}
-                </span>
+              <div className="w-7 h-7 rounded-full bg-terracotta-500 flex items-center justify-center overflow-hidden">
+                {profile?.avatar_url ? (
+                  <img src={profile.avatar_url} alt={firstName} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-white text-xs font-display font-bold">
+                    {initial}
+                  </span>
+                )}
               </div>
               <span className="font-body text-sm font-semibold text-midnight">
                 {firstName}

@@ -4,81 +4,12 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Loader2, Save, Sparkles } from 'lucide-react';
+import { CreditCard, Loader2, Save, Sparkles } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import TripGenerator, { type TripGeneratorInput } from '@/components/TripGenerator';
+import TripGenerator from '@/components/TripGenerator';
 import ItineraryView from '@/components/ItineraryView';
-import { supabase } from '@/lib/supabase';
-
-async function saveTrip(userId: string, trip: any, input: TripGeneratorInput): Promise<string | null> {
-  const coverImage = trip.days?.[0]?.hotel?.image ?? null;
-  const { data: tripRow, error: tripError } = await supabase
-    .from('trips')
-    .insert({
-      user_id: userId,
-      title: trip.title,
-      summary: trip.summary,
-      duration: input.duration,
-      budget: input.budget,
-      total_cost: trip.totalCost,
-      interests: input.interests,
-      highlights: trip.highlights,
-      status: 'saved',
-      cover_image: coverImage,
-      preferences: {
-        ...input.preferences,
-        startDate: input.startDate,
-        endDate: input.endDate,
-        regions: input.regions,
-        selectedExperienceIds: input.selectedExperienceIds,
-      },
-      trip_data: trip,
-    })
-    .select()
-    .single();
-
-  if (tripError || !tripRow) {
-    return null;
-  }
-
-  for (const day of trip.days ?? []) {
-    const { data: dayRow } = await supabase
-      .from('trip_days')
-      .insert({
-        trip_id: tripRow.id,
-        day_number: day.day,
-        location: day.location,
-        total_day_cost: day.totalDayCost,
-        hotel_name: day.hotel?.name ?? null,
-        hotel_price: day.hotel?.price ?? null,
-        hotel_stars: day.hotel?.stars ?? null,
-        hotel_image: day.hotel?.image ?? null,
-      })
-      .select()
-      .single();
-
-    if (!dayRow) {
-      continue;
-    }
-
-    if (day.activities?.length) {
-      await supabase.from('trip_activities').insert(
-        day.activities.map((activity: any, index: number) => ({
-          trip_day_id: dayRow.id,
-          time_slot: activity.time,
-          title: activity.title,
-          description: activity.description,
-          activity_type: activity.type,
-          price: activity.price,
-          location: activity.location ?? day.location,
-          sort_order: index,
-        }))
-      );
-    }
-  }
-
-  return tripRow.id;
-}
+import { saveTripRecord } from '@/lib/tripStorage';
+import type { TripGeneratorInput } from '@/lib/tripTypes';
 
 export default function NewTripPage() {
   const router = useRouter();
@@ -86,6 +17,7 @@ export default function NewTripPage() {
   const [generatedTrip, setGeneratedTrip] = useState<any>(null);
   const [generatorInput, setGeneratorInput] = useState<TripGeneratorInput | null>(null);
   const [saving, setSaving] = useState(false);
+  const [redirectingToBooking, setRedirectingToBooking] = useState(false);
   const [saveError, setSaveError] = useState('');
 
   useEffect(() => {
@@ -101,7 +33,12 @@ export default function NewTripPage() {
 
     setSaving(true);
     setSaveError('');
-    const id = await saveTrip(user.id, generatedTrip, generatorInput);
+    const id = await saveTripRecord({
+      userId: user.id,
+      trip: generatedTrip,
+      input: generatorInput,
+      status: 'saved',
+    });
     setSaving(false);
 
     if (id) {
@@ -110,6 +47,24 @@ export default function NewTripPage() {
     }
 
     setSaveError('Impossible de sauvegarder ce voyage pour le moment.');
+  };
+
+  const handleBooking = () => {
+    if (!generatedTrip || !generatorInput) {
+      return;
+    }
+
+    setRedirectingToBooking(true);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(
+        'hkeyetna-pending-booking',
+        JSON.stringify({
+          trip: generatedTrip,
+          input: generatorInput,
+        })
+      );
+    }
+    router.push('/trip/booking');
   };
 
   if (authLoading) {
@@ -146,12 +101,14 @@ export default function NewTripPage() {
         }}
       />
 
+      {generatedTrip && <ItineraryView trip={generatedTrip} />}
+
       {generatedTrip && (
         <div className="px-6">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="max-w-4xl mx-auto mt-2 mb-4 bg-white rounded-4xl border border-sand-100 shadow-sm p-6"
+            className="max-w-4xl mx-auto mt-6 bg-white rounded-4xl border border-sand-100 shadow-sm p-6"
           >
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
@@ -160,23 +117,31 @@ export default function NewTripPage() {
                   Votre itinéraire est prêt
                 </div>
                 <p className="font-body text-sm text-midnight/55">
-                  Sauvegardez-le pour le retrouver dans votre profil et y revenir plus tard.
+                  Vérifiez d&apos;abord votre voyage dans Booking pour choisir le paiement, puis il sera enregistré dans votre espace booking. Vous pouvez aussi le sauvegarder en brouillon.
                 </p>
                 {saveError && (
                   <p className="font-body text-sm text-red-500 mt-3">{saveError}</p>
                 )}
               </div>
 
-              <button onClick={handleSave} className="btn-primary flex items-center justify-center gap-2 min-w-[220px]" disabled={saving}>
-                {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                {saving ? 'Sauvegarde…' : 'Sauvegarder ce voyage'}
-              </button>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={handleBooking}
+                  className="btn-primary flex items-center justify-center gap-2 min-w-[220px]"
+                  disabled={redirectingToBooking}
+                >
+                  {redirectingToBooking ? <Loader2 size={16} className="animate-spin" /> : <CreditCard size={16} />}
+                  {redirectingToBooking ? 'Ouverture du booking…' : 'Booking'}
+                </button>
+                <button onClick={handleSave} className="btn-secondary flex items-center justify-center gap-2 min-w-[220px]" disabled={saving}>
+                  {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                  {saving ? 'Sauvegarde…' : 'Sauvegarder en brouillon'}
+                </button>
+              </div>
             </div>
           </motion.div>
         </div>
       )}
-
-      {generatedTrip && <ItineraryView trip={generatedTrip} />}
     </div>
   );
 }

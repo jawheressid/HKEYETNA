@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
@@ -10,7 +10,7 @@ import CurrencySwitcher from '@/components/CurrencySwitcher';
 import { supabase, type Trip } from '@/lib/supabase';
 import {
   MapPin, Clock, Wallet, Plus, Trash2, Eye, LogOut,
-  Settings, Briefcase, Calendar, ChevronRight, Loader2
+  Settings, Briefcase, Calendar, ChevronRight, Loader2, CreditCard
 } from 'lucide-react';
 
 const STATUS_COLORS = {
@@ -29,8 +29,42 @@ const STATUS_LABELS = {
   archived: 'Archivé',
 };
 
+const AVATAR_OPTIONS = [
+  '/branding/sticker-khamsa.png',
+  '/branding/sticker-tea.png',
+  '/branding/sticker-door.png',
+  '/branding/sticker-bag.png',
+  '/branding/sticker-fan.png',
+  '/branding/sticker-flowers.png',
+];
+
+const PROFILE_SLIDES = [
+  {
+    image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1200&q=80',
+    title: 'Sidi Bou Saïd',
+    caption: 'Grand Tunis, ruelles blanches et bleues',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=1200&q=80',
+    title: 'Douz',
+    caption: 'Kébili, dunes et nuits étoilées',
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80',
+    title: 'Djerba',
+    caption: 'Médenine, mer et artisanat',
+  },
+];
+
+function isBookedTrip(trip: Trip) {
+  return trip.preferences?.booking?.status === 'confirmed';
+}
+
 function TripCard({ trip, onDelete }: { trip: Trip; onDelete: (id: string) => void }) {
   const mainDestination = trip.trip_data?.days?.[0]?.location ?? 'Tunisie';
+  const bookingConfirmed = isBookedTrip(trip);
+  const statusClass = bookingConfirmed ? 'bg-olive-50 text-olive-700' : STATUS_COLORS[trip.status];
+  const statusLabel = bookingConfirmed ? 'Booking confirmé' : STATUS_LABELS[trip.status];
 
   return (
     <motion.div whileHover={{ y: -3 }} className="bg-white rounded-4xl border border-sand-100 shadow-sm overflow-hidden group">
@@ -40,8 +74,8 @@ function TripCard({ trip, onDelete }: { trip: Trip; onDelete: (id: string) => vo
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-midnight/30 to-transparent" />
         <div className="absolute top-3 right-3">
-          <span className={`text-xs font-body font-medium px-2.5 py-1 rounded-full ${STATUS_COLORS[trip.status]}`}>
-            {STATUS_LABELS[trip.status]}
+          <span className={`text-xs font-body font-medium px-2.5 py-1 rounded-full ${statusClass}`}>
+            {statusLabel}
           </span>
         </div>
         <div className="absolute bottom-3 left-4 flex items-center gap-1.5 text-white text-xs font-body">
@@ -104,13 +138,17 @@ function EmptyTrips() {
 
 export default function ProfilePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, profile, loading: authLoading, signOut, refreshProfile } = useAuth();
   const { currency } = useCurrency();
-  const [tab, setTab] = useState<'trips' | 'settings'>('trips');
+  const initialTab = searchParams.get('tab') === 'bookings' ? 'bookings' : searchParams.get('tab') === 'settings' ? 'settings' : 'trips';
+  const [tab, setTab] = useState<'trips' | 'bookings' | 'settings'>(initialTab);
   const [trips, setTrips] = useState<Trip[]>([]);
   const [tripsLoading, setTripsLoading] = useState(true);
   const [fullName, setFullName] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [saving, setSaving] = useState(false);
+  const [activeSlide, setActiveSlide] = useState(0);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -121,8 +159,21 @@ export default function ProfilePage() {
   useEffect(() => {
     if (profile) {
       setFullName(profile.full_name ?? '');
+      setAvatarUrl(profile.avatar_url ?? '');
     }
   }, [profile]);
+
+  useEffect(() => {
+    setTab(initialTab);
+  }, [initialTab]);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActiveSlide((previous) => (previous + 1) % PROFILE_SLIDES.length);
+    }, 4500);
+
+    return () => window.clearInterval(timer);
+  }, []);
 
   const fetchTrips = async () => {
     if (!user) {
@@ -146,6 +197,9 @@ export default function ProfilePage() {
     }
   }, [user]);
 
+  const bookedTrips = trips.filter(isBookedTrip);
+  const firstName = (profile?.full_name ?? profile?.email ?? 'Voyageur').split(' ')[0];
+
   const deleteTrip = async (id: string) => {
     if (!window.confirm('Supprimer ce voyage ?')) {
       return;
@@ -165,6 +219,7 @@ export default function ProfilePage() {
       .from('profiles')
       .update({
         full_name: fullName,
+        avatar_url: avatarUrl || null,
         preferred_currency: currency,
       })
       .eq('id', user.id);
@@ -193,10 +248,14 @@ export default function ProfilePage() {
           <aside className="hidden md:block">
             <div className="bg-white rounded-4xl border border-sand-100 shadow-sm p-6 sticky top-32">
               <div className="flex flex-col items-center text-center mb-8 pt-2">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-terracotta-400 to-terracotta-600 flex items-center justify-center mb-4">
-                  <span className="font-display text-3xl text-white font-medium">
-                    {(profile?.full_name ?? profile?.email ?? 'U')[0].toUpperCase()}
-                  </span>
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-terracotta-400 to-terracotta-600 flex items-center justify-center mb-4 overflow-hidden">
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt={profile?.full_name ?? 'Avatar'} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="font-display text-3xl text-white font-medium">
+                      {(profile?.full_name ?? profile?.email ?? 'U')[0].toUpperCase()}
+                    </span>
+                  )}
                 </div>
                 <h2 className="font-display text-xl font-medium text-midnight mb-1">
                   {profile?.full_name ?? 'Voyageur'}
@@ -212,11 +271,12 @@ export default function ProfilePage() {
               <nav className="space-y-1">
                 {[
                   { id: 'trips', icon: Briefcase, label: 'Mes voyages' },
+                  { id: 'bookings', icon: CreditCard, label: 'Mes bookings' },
                   { id: 'settings', icon: Settings, label: 'Paramètres' },
                 ].map((item) => (
                   <button
                     key={item.id}
-                    onClick={() => setTab(item.id as 'trips' | 'settings')}
+                    onClick={() => setTab(item.id as 'trips' | 'bookings' | 'settings')}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-body font-medium text-sm transition-all ${
                       tab === item.id
                         ? 'bg-terracotta-50 text-terracotta-700'
@@ -243,10 +303,14 @@ export default function ProfilePage() {
           <main>
             <div className="md:hidden mb-6">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-terracotta-400 to-terracotta-600 flex items-center justify-center">
-                  <span className="font-display text-2xl text-white font-medium">
-                    {(profile?.full_name ?? profile?.email ?? 'U')[0].toUpperCase()}
-                  </span>
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-terracotta-400 to-terracotta-600 flex items-center justify-center overflow-hidden">
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt={profile?.full_name ?? 'Avatar'} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="font-display text-2xl text-white font-medium">
+                      {(profile?.full_name ?? profile?.email ?? 'U')[0].toUpperCase()}
+                    </span>
+                  )}
                 </div>
                 <div>
                   <h2 className="font-display text-lg font-medium text-midnight">{profile?.full_name ?? 'Voyageur'}</h2>
@@ -257,11 +321,12 @@ export default function ProfilePage() {
               <div className="flex bg-sand-100 rounded-2xl p-1">
                 {[
                   { id: 'trips', label: 'Mes voyages' },
+                  { id: 'bookings', label: 'Bookings' },
                   { id: 'settings', label: 'Paramètres' },
                 ].map((currentTab) => (
                   <button
                     key={currentTab.id}
-                    onClick={() => setTab(currentTab.id as 'trips' | 'settings')}
+                    onClick={() => setTab(currentTab.id as 'trips' | 'bookings' | 'settings')}
                     className={`flex-1 py-2 rounded-xl font-body font-semibold text-sm transition-all ${
                       tab === currentTab.id ? 'bg-white text-midnight shadow-sm' : 'text-midnight/50'
                     }`}
@@ -269,6 +334,60 @@ export default function ProfilePage() {
                     {currentTab.label}
                   </button>
                 ))}
+              </div>
+            </div>
+
+            <div className="mb-8 grid lg:grid-cols-[1fr_0.95fr] gap-5">
+              <div className="bg-white rounded-4xl border border-sand-100 shadow-sm p-7">
+                <span className="tag mb-4 inline-flex">✦ Tableau de bord</span>
+                <h1 className="font-display text-4xl font-light text-midnight mb-3">
+                  Bienvenue {firstName}
+                </h1>
+                <p className="font-body text-midnight/55 max-w-xl">
+                  Retrouvez vos voyages, vos bookings confirmés et personnalisez votre profil avant de repartir explorer la Tunisie.
+                </p>
+                <div className="grid sm:grid-cols-3 gap-3 mt-6">
+                  <div className="bg-sand-50 rounded-3xl border border-sand-200 p-4">
+                    <p className="text-xs font-body text-midnight/40 mb-1">Voyages</p>
+                    <p className="font-display text-2xl text-midnight">{trips.length}</p>
+                  </div>
+                  <div className="bg-sand-50 rounded-3xl border border-sand-200 p-4">
+                    <p className="text-xs font-body text-midnight/40 mb-1">Bookings</p>
+                    <p className="font-display text-2xl text-midnight">{bookedTrips.length}</p>
+                  </div>
+                  <div className="bg-sand-50 rounded-3xl border border-sand-200 p-4">
+                    <p className="text-xs font-body text-midnight/40 mb-1">Devise</p>
+                    <p className="font-display text-2xl text-midnight">{currency}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative rounded-4xl overflow-hidden min-h-[300px] border border-sand-100 shadow-sm bg-white">
+                {PROFILE_SLIDES.map((slide, index) => (
+                  <motion.img
+                    key={slide.title}
+                    src={slide.image}
+                    alt={slide.title}
+                    initial={false}
+                    animate={{ opacity: activeSlide === index ? 1 : 0, scale: activeSlide === index ? 1 : 1.04 }}
+                    transition={{ duration: 0.7 }}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                ))}
+                <div className="absolute inset-0 bg-gradient-to-t from-midnight/75 via-midnight/20 to-transparent" />
+                <div className="absolute bottom-0 inset-x-0 p-6">
+                  <p className="font-display text-3xl text-white">{PROFILE_SLIDES[activeSlide].title}</p>
+                  <p className="font-body text-white/75 mt-1">{PROFILE_SLIDES[activeSlide].caption}</p>
+                  <div className="flex gap-2 mt-4">
+                    {PROFILE_SLIDES.map((slide, index) => (
+                      <button
+                        key={slide.title}
+                        onClick={() => setActiveSlide(index)}
+                        className={`rounded-full transition-all ${activeSlide === index ? 'w-8 h-2 bg-white' : 'w-2 h-2 bg-white/50'}`}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -297,6 +416,46 @@ export default function ProfilePage() {
                   ) : (
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
                       {trips.map((trip) => (
+                        <TripCard key={trip.id} trip={trip} onDelete={deleteTrip} />
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+
+              {tab === 'bookings' && (
+                <motion.div key="bookings" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                  <div className="flex items-center justify-between mb-8 gap-4 flex-wrap">
+                    <div>
+                      <span className="tag mb-2 inline-flex">✦ Confirmations</span>
+                      <h1 className="font-display text-3xl font-light text-midnight">Mes bookings</h1>
+                    </div>
+                    <Link href="/trip/new" className="btn-primary flex items-center gap-2 text-sm">
+                      <Plus size={15} />
+                      Nouveau booking
+                    </Link>
+                  </div>
+
+                  {tripsLoading ? (
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                      {[...Array(3)].map((_, index) => (
+                        <div key={index} className="bg-sand-100 rounded-4xl h-60 animate-pulse" />
+                      ))}
+                    </div>
+                  ) : bookedTrips.length === 0 ? (
+                    <div className="bg-white rounded-4xl border border-sand-100 shadow-sm p-10 text-center">
+                      <h3 className="font-display text-2xl font-light text-midnight mb-3">Aucun booking confirmé</h3>
+                      <p className="font-body text-midnight/55 mb-6">
+                        Confirmez un voyage depuis l&apos;écran Booking et il apparaîtra ici.
+                      </p>
+                      <Link href="/trip/new" className="btn-primary inline-flex items-center gap-2">
+                        <CreditCard size={15} />
+                        Lancer un booking
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                      {bookedTrips.map((trip) => (
                         <TripCard key={trip.id} trip={trip} onDelete={deleteTrip} />
                       ))}
                     </div>
@@ -337,6 +496,31 @@ export default function ProfilePage() {
                       <label className="font-body font-semibold text-sm text-midnight mb-3 block">Devise préférée</label>
                       <CurrencySwitcher />
                       <p className="text-xs text-midnight/40 font-body mt-2">Cette devise sera utilisée pour l&apos;affichage des budgets.</p>
+                    </div>
+
+                    <div>
+                      <label className="font-body font-semibold text-sm text-midnight mb-3 block">Choisir un avatar</label>
+                      <div className="grid grid-cols-3 gap-3">
+                        {AVATAR_OPTIONS.map((option) => (
+                          <button
+                            key={option}
+                            onClick={() => setAvatarUrl(option)}
+                            className={`rounded-3xl border-2 p-3 transition-all ${
+                              avatarUrl === option
+                                ? 'border-terracotta-500 bg-terracotta-50'
+                                : 'border-sand-200 bg-sand-50'
+                            }`}
+                          >
+                            <img src={option} alt="Avatar" className="w-16 h-16 object-cover mx-auto" />
+                          </button>
+                        ))}
+                      </div>
+                      <button
+                        onClick={() => setAvatarUrl('')}
+                        className="mt-3 text-sm font-body text-midnight/55 hover:text-midnight"
+                      >
+                        Retirer l&apos;avatar
+                      </button>
                     </div>
 
                     <button

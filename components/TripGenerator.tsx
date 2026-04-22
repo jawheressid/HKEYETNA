@@ -24,27 +24,21 @@ import {
   getSuggestedRegions,
   type TransportPreference,
 } from '@/lib/tripPlanner';
-
-export interface TripGeneratorInput {
-  budget: number;
-  duration: number;
-  startDate: string;
-  endDate: string;
-  interests: string[];
-  regions: string[];
-  selectedExperienceIds: string[];
-  preferences: {
-    includeWorkshops: boolean;
-    transportPreference: TransportPreference;
-    wantsGuide: boolean;
-    notes: string;
-  };
-}
+import type { TripGeneratorInput } from '@/lib/tripTypes';
 
 interface Props {
   onTripGenerated: (trip: any, input: TripGeneratorInput) => void;
   onReset?: () => void;
 }
+
+const EXPERIENCE_FILTERS = [
+  { id: 'all', label: 'Tout' },
+  { id: 'visite', label: 'Visites' },
+  { id: 'activité', label: 'Activités' },
+  { id: 'artisanat', label: 'Artisanat' },
+  { id: 'gastronomie', label: 'Gastronomie' },
+  { id: 'nature', label: 'Nature' },
+];
 
 const tomorrow = dateToInputValue(new Date(Date.now() + 24 * 60 * 60 * 1000));
 
@@ -61,6 +55,7 @@ export default function TripGenerator({ onTripGenerated, onReset }: Props) {
   const [transportPreference, setTransportPreference] = useState<TransportPreference>('no-preference');
   const [wantsGuide, setWantsGuide] = useState(true);
   const [extraPreferences, setExtraPreferences] = useState('');
+  const [experienceFilter, setExperienceFilter] = useState('all');
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
 
@@ -75,8 +70,18 @@ export default function TripGenerator({ onTripGenerated, onReset }: Props) {
         selectedInterests,
         selectedRegions,
         limit: 8,
+      }).filter((experience) => {
+        if (experienceFilter === 'all') {
+          return true;
+        }
+
+        return (
+          experience.activityType === experienceFilter ||
+          experience.category === experienceFilter ||
+          experience.tags.includes(experienceFilter)
+        );
       }),
-    [selectedInterests, selectedRegions]
+    [experienceFilter, selectedInterests, selectedRegions]
   );
 
   useEffect(() => {
@@ -84,6 +89,22 @@ export default function TripGenerator({ onTripGenerated, onReset }: Props) {
       setSelectedRegions(suggestedRegions.slice(0, 2));
     }
   }, [selectedRegions.length, suggestedRegions]);
+
+  useEffect(() => {
+    if (selectedRegions.length === 0) {
+      return;
+    }
+
+    setSelectedExperienceIds((previous) =>
+      previous.filter((id) =>
+        getRecommendedExperiences({
+          selectedInterests,
+          selectedRegions,
+          limit: 50,
+        }).some((experience) => experience.id === id)
+      )
+    );
+  }, [selectedInterests, selectedRegions]);
 
   const toggleInterest = (id: string) => {
     setSelectedInterests((previous) =>
@@ -456,7 +477,33 @@ export default function TripGenerator({ onTripGenerated, onReset }: Props) {
                       <span className="tag">{selectedExperienceIds.length} activité{selectedExperienceIds.length > 1 ? 's' : ''} choisie{selectedExperienceIds.length > 1 ? 's' : ''}</span>
                     </div>
 
+                    <div className="flex flex-wrap gap-2 mb-5">
+                      {selectedRegions.length > 0 && (
+                        <span className="tag bg-olive-50 text-olive-700">
+                          Régions actives: {selectedRegions.join(', ')}
+                        </span>
+                      )}
+                      {EXPERIENCE_FILTERS.map((filter) => (
+                        <button
+                          key={filter.id}
+                          onClick={() => setExperienceFilter(filter.id)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-body font-medium transition-colors ${
+                            experienceFilter === filter.id
+                              ? 'bg-midnight text-white'
+                              : 'bg-sand-100 text-midnight/65 hover:bg-sand-200'
+                          }`}
+                        >
+                          {filter.label}
+                        </button>
+                      ))}
+                    </div>
+
                     <div className="grid md:grid-cols-2 gap-4">
+                      {recommendedExperiences.length === 0 && (
+                        <div className="md:col-span-2 rounded-3xl border border-sand-200 bg-sand-50 p-5 font-body text-sm text-midnight/60">
+                          Aucune activité ne correspond encore à cette combinaison. Essayez une autre région ou un autre filtre.
+                        </div>
+                      )}
                       {recommendedExperiences.map((experience) => {
                         const selected = selectedExperienceIds.includes(experience.id);
                         return (

@@ -1,5 +1,11 @@
 import placesData from '@/data/places.json';
 import {
+  getAccommodationSuggestions,
+  pickRestaurantsForDay,
+  selectAccommodation,
+  type RestaurantRecord,
+} from '@/lib/catalog';
+import {
   addDays,
   buildActivityFromExperience,
   buildPlaceVisitActivity,
@@ -61,6 +67,7 @@ export interface DayPlan {
     price: number;
     stars: number;
     image: string;
+    accommodationType?: string;
     coordinates?: {
       lat: number;
       lng: number;
@@ -90,59 +97,10 @@ export interface HotelSuggestion {
   price: number;
   stars: number;
   image: string;
+  accommodationType?: string;
   coordinates?: {
     lat: number;
     lng: number;
-  };
-}
-
-const HOTELS: Record<string, Array<{ name: string; priceRange: [number, number]; stars: number; image: string }>> = {
-  Tunis: [
-    { name: 'Hotel Majestic Tunis', priceRange: [180, 280], stars: 4, image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80' },
-    { name: 'La Maison Blanche', priceRange: [250, 400], stars: 5, image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&q=80' },
-    { name: 'Dar El Jeld Hotel', priceRange: [220, 360], stars: 5, image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400&q=80' },
-  ],
-  Djerba: [
-    { name: 'Hasdrubal Thalassa & Spa', priceRange: [280, 450], stars: 5, image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&q=80' },
-    { name: 'Radisson Blu Djerba', priceRange: [200, 320], stars: 4, image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80' },
-    { name: 'Dar Jerba', priceRange: [110, 180], stars: 3, image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&q=80' },
-  ],
-  Douz: [
-    { name: 'Sahara Douz Hotel', priceRange: [140, 220], stars: 4, image: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=400&q=80' },
-    { name: 'Campement Berbère Étoile', priceRange: [180, 280], stars: 4, image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&q=80' },
-  ],
-  Hammamet: [
-    { name: 'Mövenpick Resort Hammamet', priceRange: [240, 380], stars: 5, image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&q=80' },
-    { name: 'The Sindbad', priceRange: [180, 300], stars: 5, image: 'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=400&q=80' },
-  ],
-  Sousse: [
-    { name: 'Dar Antonia', priceRange: [160, 260], stars: 4, image: 'https://images.unsplash.com/photo-1522798514-97ceb8c4f1c8?w=400&q=80' },
-    { name: 'Mövenpick Resort Sousse', priceRange: [230, 360], stars: 5, image: 'https://images.unsplash.com/photo-1455587734955-081b22074882?w=400&q=80' },
-  ],
-  Mahdia: [
-    { name: 'Iberostar Selection Royal El Mansour', priceRange: [170, 260], stars: 5, image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&q=80' },
-  ],
-  Kairouan: [
-    { name: 'La Kasbah Kairouan', priceRange: [140, 220], stars: 5, image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&q=80' },
-  ],
-};
-
-function getHotelsForCity(city: string) {
-  return HOTELS[city] || HOTELS.Tunis;
-}
-
-function selectHotel(city: string, dailyBudget: number) {
-  const options = getHotelsForCity(city);
-  const affordable = options.filter((hotel) => hotel.priceRange[0] <= dailyBudget * 0.55);
-  const selected = affordable.length > 0 ? affordable[0] : options[0];
-  const coordinates = resolveCoordinates(city, city);
-
-  return {
-    name: selected.name,
-    price: Math.round((selected.priceRange[0] + selected.priceRange[1]) / 2),
-    stars: selected.stars,
-    image: selected.image,
-    coordinates,
   };
 }
 
@@ -157,49 +115,50 @@ export function getHotelSuggestions({
   excludeName?: string;
   limit?: number;
 }) {
-  const normalizedExcluded = normalizeText(excludeName);
-  const options = getHotelsForCity(city)
-    .filter((hotel) => normalizeText(hotel.name) !== normalizedExcluded)
-    .sort((left, right) => {
-      const leftDiff = Math.abs(left.priceRange[0] - budgetPerNight);
-      const rightDiff = Math.abs(right.priceRange[0] - budgetPerNight);
-      return leftDiff - rightDiff;
-    })
-    .slice(0, limit);
-
-  return options.map((hotel) => ({
-    name: hotel.name,
-    price: Math.round((hotel.priceRange[0] + hotel.priceRange[1]) / 2),
-    stars: hotel.stars,
-    image: hotel.image,
-    coordinates: resolveCoordinates(city, city),
-  } as HotelSuggestion));
+  return getAccommodationSuggestions({
+    city,
+    budgetPerNight,
+    excludeName,
+    limit,
+  }) as HotelSuggestion[];
 }
 
-function buildGenericMeal({
+function clampArtisansSupported(value?: number) {
+  return Math.min(value ?? 0, 3);
+}
+
+function buildRestaurantMeal({
   time,
-  title,
-  description,
   city,
-  price,
+  mealLabel,
+  restaurant,
+  fallbackPrice,
 }: {
   time: string;
-  title: string;
-  description: string;
   city: string;
-  price: number;
+  mealLabel: string;
+  restaurant?: RestaurantRecord;
+  fallbackPrice: number;
 }): DayActivity {
+  const title = restaurant ? `${mealLabel} - ${restaurant.name}` : mealLabel;
+  const description = restaurant
+    ? `${restaurant.description} Specialités: ${restaurant.specialties.slice(0, 2).join(', ')}.`
+    : 'Pause gourmande avec produits régionaux et adresse locale sélectionnée selon votre budget.';
+
   return {
     id: `${normalizeText(title)}-${normalizeText(city)}`,
     time,
     title,
     description,
     type: 'repas',
-    price,
-    location: city,
-    coordinates: resolveCoordinates(city, city),
-    socialImpactPercent: 66,
-    artisansSupported: 4,
+    price: restaurant?.averageTicket || fallbackPrice,
+    location: restaurant?.city || city,
+    image: restaurant?.image,
+    coordinates: restaurant
+      ? { lat: restaurant.lat, lng: restaurant.lng }
+      : resolveCoordinates(city, city),
+    socialImpactPercent: restaurant ? 74 : 66,
+    artisansSupported: clampArtisansSupported(restaurant ? 2 : 1),
   };
 }
 
@@ -253,6 +212,13 @@ function getRegionSeedCities(regions: string[] = []) {
   );
 }
 
+function getRegionForCity(city: string) {
+  return (
+    resolvePlace(city, city)?.region ||
+    placesData.find((place) => normalizeText(place.city) === normalizeText(city))?.region
+  );
+}
+
 function isCityAllowedByRegions(city: string, regions: string[] = []) {
   if (regions.length === 0) {
     return true;
@@ -301,6 +267,18 @@ function getInterestSeedCities(interests: string[]) {
   return interests.flatMap((interest) => destinationMap[normalizeText(interest)] || []);
 }
 
+function distributeDaysAcrossRegions(duration: number, regionCount: number) {
+  const safeRegionCount = Math.max(regionCount, 1);
+  const base = Math.floor(duration / safeRegionCount);
+  let remainder = duration % safeRegionCount;
+
+  return Array.from({ length: safeRegionCount }, () => {
+    const value = base + (remainder > 0 ? 1 : 0);
+    remainder = Math.max(0, remainder - 1);
+    return Math.max(value, 1);
+  });
+}
+
 function pickCities(input: TripInput) {
   const duration = calculateDuration(input.startDate, input.endDate) || input.duration;
   const selectedExperienceIds = filterExperienceIdsByRegions(input.selectedExperienceIds, input.regions || []);
@@ -314,11 +292,6 @@ function pickCities(input: TripInput) {
     isCityAllowedByRegions(city, input.regions || [])
   );
 
-  const fallbackPool =
-    hasRegionConstraint && regionSeedCities.length > 0
-      ? regionSeedCities
-      : defaults;
-
   const candidates = [
     input.startCity && isCityAllowedByRegions(input.startCity, input.regions || []) ? input.startCity : null,
     ...selectedExperiences.map((experience) => experience.location),
@@ -327,18 +300,43 @@ function pickCities(input: TripInput) {
     ...(hasRegionConstraint ? [] : defaults),
   ].filter(Boolean) as string[];
 
-  const plannedCities: string[] = [];
-  for (const city of candidates) {
-    if (!plannedCities.includes(city)) {
-      plannedCities.push(city);
-    }
+  const regionOrder = Array.from(
+    new Set(
+      (
+        hasRegionConstraint
+          ? input.regions || []
+          : [
+              ...selectedExperiences.map((experience) => experience.region),
+              ...candidates.map((city) => getRegionForCity(city)).filter(Boolean),
+              ...defaults.map((city) => getRegionForCity(city)).filter(Boolean),
+            ]
+      ).filter(Boolean)
+    )
+  );
 
-    if (plannedCities.length >= duration) {
-      break;
+  const plannedCities: string[] = [];
+  const regionDayCounts = distributeDaysAcrossRegions(duration, regionOrder.length || 1);
+
+  regionOrder.forEach((region, regionIndex) => {
+    const regionCities = Array.from(
+      new Set(
+        candidates.filter((city) => normalizeText(getRegionForCity(city)) === normalizeText(region))
+      )
+    );
+    const fallbackCities = getRegionSeedCities([region]);
+    const pool = [...regionCities, ...fallbackCities].filter(
+      (city, index, collection) => collection.indexOf(city) === index
+    );
+
+    const blockLength = regionDayCounts[regionIndex] || 1;
+    for (let dayOffset = 0; dayOffset < blockLength; dayOffset += 1) {
+      plannedCities.push(pool[dayOffset % Math.max(pool.length, 1)] || 'Tunis');
     }
-  }
+  });
 
   let cursor = 0;
+  const fallbackPool =
+    (hasRegionConstraint && regionSeedCities.length > 0 ? regionSeedCities : defaults).filter(Boolean);
   while (plannedCities.length < duration) {
     plannedCities.push(fallbackPool[cursor % fallbackPool.length] || 'Tunis');
     cursor += 1;
@@ -356,6 +354,7 @@ function buildDayActivities({
   includeWorkshops,
   wantsGuide,
   transportPreference,
+  dailyBudget,
 }: {
   city: string;
   interests: string[];
@@ -365,6 +364,7 @@ function buildDayActivities({
   includeWorkshops: boolean;
   wantsGuide: boolean;
   transportPreference: TransportPreference;
+  dailyBudget: number;
 }) {
   const selectedExperiences = getExperiencesByIds(selectedExperienceIds).filter(
     (experience) =>
@@ -399,6 +399,7 @@ function buildDayActivities({
     resolvePlace(city, city) ||
     placesData.find((place) => normalizeText(place.city) === normalizeText(city)) ||
     placesData[0];
+  const restaurants = pickRestaurantsForDay(city, dailyBudget);
 
   const activities: DayActivity[] = [];
   const transport = buildTransportActivity(city, transportPreference);
@@ -408,12 +409,12 @@ function buildDayActivities({
   }
 
   activities.push(
-    buildGenericMeal({
+    buildRestaurantMeal({
       time: '08:45',
-      title: 'Petit-déjeuner de terroir',
-      description: 'Pause gourmande avec produits régionaux, pain encore chaud et spécialités du matin.',
       city,
-      price: 18,
+      mealLabel: 'Petit-déjeuner de terroir',
+      restaurant: restaurants.breakfast,
+      fallbackPrice: 18,
     })
   );
 
@@ -424,12 +425,12 @@ function buildDayActivities({
   }
 
   activities.push(
-    buildGenericMeal({
+    buildRestaurantMeal({
       time: '13:00',
-      title: 'Déjeuner chez une adresse locale',
-      description: 'Table choisie pour sa cuisine de saison et son ancrage dans la région visitée.',
       city,
-      price: 42,
+      mealLabel: 'Déjeuner chez une adresse locale',
+      restaurant: restaurants.lunch,
+      fallbackPrice: 42,
     })
   );
 
@@ -446,7 +447,7 @@ function buildDayActivities({
       location: city,
       coordinates: resolveCoordinates(city, city),
       socialImpactPercent: 87,
-      artisansSupported: 10,
+      artisansSupported: 3,
       selectedByUser: false,
     });
   } else if (featuredPlace) {
@@ -455,17 +456,17 @@ function buildDayActivities({
       title: `Temps libre à ${featuredPlace.name}`,
       description: `Exploration plus souple de ${featuredPlace.name} avec pauses photo et bonnes adresses repérées.`,
       socialImpactPercent: 61,
-      artisansSupported: 6,
+      artisansSupported: 2,
     });
   }
 
   activities.push(
-    buildGenericMeal({
+    buildRestaurantMeal({
       time: '19:30',
-      title: 'Dîner signature',
-      description: 'Dernière séquence de la journée dans une adresse valorisant les produits, les pêcheurs ou les artisanes de la région.',
       city,
-      price: 58,
+      mealLabel: 'Dîner signature',
+      restaurant: restaurants.dinner,
+      fallbackPrice: 58,
     })
   );
 
@@ -549,7 +550,9 @@ function enrichActivity(
     image: matchedExperience?.image || anyMatchingExperience?.image,
     selectedByUser: Boolean(matchedExperience),
     socialImpactPercent: matchedExperience?.socialImpactPercent || anyMatchingExperience?.socialImpactPercent || 54,
-    artisansSupported: matchedExperience?.artisansSupported || anyMatchingExperience?.artisansSupported || 4,
+    artisansSupported: clampArtisansSupported(
+      matchedExperience?.artisansSupported || anyMatchingExperience?.artisansSupported || 2
+    ),
     coordinates,
   };
 }
@@ -782,7 +785,7 @@ export function hydrateGeneratedTrip(rawTrip: any, input: TripInput): GeneratedT
           image: day.hotel.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80',
           coordinates: resolveCoordinates(day.hotel.name, location) || resolveCoordinates(location, location),
         }
-      : selectHotel(location, Math.round((input.budget || 2000) / duration));
+      : selectAccommodation(location, Math.round((input.budget || 2000) / duration));
 
     const activities = (Array.isArray(day.activities) ? day.activities : [])
       .map((activity: any) =>
@@ -813,6 +816,7 @@ export function hydrateGeneratedTrip(rawTrip: any, input: TripInput): GeneratedT
       includeWorkshops: Boolean(normalizedInput.preferences?.includeWorkshops),
       wantsGuide: normalizedInput.preferences?.wantsGuide !== false,
       transportPreference: normalizedInput.preferences?.transportPreference || 'no-preference',
+      dailyBudget: Math.round((input.budget || 2000) / duration),
     });
 
     const finalActivities = [...activities];
@@ -897,7 +901,7 @@ export function buildMockTrip(input: TripInput): GeneratedTrip {
   const usedExperienceIds = new Set<string>();
 
   const days: DayPlan[] = cities.map((city, index) => {
-    const hotel = selectHotel(city, dailyBudget);
+    const hotel = selectAccommodation(city, dailyBudget);
     const activities = buildDayActivities({
       city,
       interests: input.interests,
@@ -907,6 +911,7 @@ export function buildMockTrip(input: TripInput): GeneratedTrip {
       includeWorkshops,
       wantsGuide,
       transportPreference,
+      dailyBudget,
     });
 
     const totalDayCost = activities.reduce((sum: number, activity: DayActivity) => sum + activity.price, 0) + hotel.price;

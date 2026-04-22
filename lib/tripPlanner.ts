@@ -190,7 +190,7 @@ export function buildActivityFromExperience(
     image: experience.image,
     selectedByUser,
     socialImpactPercent: experience.socialImpactPercent,
-    artisansSupported: experience.artisansSupported,
+    artisansSupported: Math.min(experience.artisansSupported, 3),
     coordinates: {
       lat: experience.lat,
       lng: experience.lng,
@@ -210,7 +210,7 @@ export function buildPlaceVisitActivity(place: PlaceRecord, time: string) {
     image: place.image,
     selectedByUser: false,
     socialImpactPercent: 58,
-    artisansSupported: 8,
+    artisansSupported: 2,
     coordinates: {
       lat: place.lat,
       lng: place.lng,

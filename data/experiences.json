@@ -1,174 +1,29 @@
 [
   {
-    "id": "camel-douz",
-    "name": "Randonnée en Dromadaire au Sahara",
-    "location": "Douz",
-    "region": "Kébili",
-    "category": "aventure",
-    "activityType": "activité",
-    "duration": "3h",
-    "price": 150,
-    "rating": 4.9,
-    "lat": 33.4569,
-    "lng": 9.02,
-    "image": "https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=600&q=80",
-    "description": "Traversée des grandes dunes de Douz sur le dos d'un dromadaire, coucher de soleil sur le Sahara inclus.",
-    "included": ["guide berbère", "thé du désert", "photos souvenirs"],
-    "tags": ["désert", "aventure", "nature"],
-    "socialImpactPercent": 82,
-    "artisansSupported": 12
-  },
-  {
-    "id": "cooking-tunis",
-    "name": "Atelier Cuisine Tunisienne",
-    "location": "Tunis",
-    "region": "Grand Tunis",
-    "category": "gastronomie",
-    "activityType": "activité",
-    "duration": "4h",
-    "price": 120,
-    "rating": 4.8,
-    "lat": 36.8008,
-    "lng": 10.1711,
-    "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80",
-    "description": "Apprenez à préparer brik, couscous et makroudh dans une maison traditionnelle avec une cheffe locale.",
-    "included": ["ingrédients", "recettes", "dégustation", "thé"],
-    "tags": ["cuisine", "culture", "famille", "artisanat"],
-    "socialImpactPercent": 88,
-    "artisansSupported": 18
-  },
-  {
-    "id": "dive-tabarka",
-    "name": "Plongée sous-marine à Tabarka",
-    "location": "Tabarka",
-    "region": "Jendouba",
-    "category": "sport",
-    "activityType": "activité",
-    "duration": "2h",
-    "price": 95,
-    "rating": 4.7,
-    "lat": 36.9545,
-    "lng": 8.7587,
-    "image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&q=80",
-    "description": "Exploration des fonds marins méditerranéens riches en coraux et poissons colorés.",
-    "included": ["équipement", "moniteur diplômé", "photos"],
-    "tags": ["mer", "sport", "nature", "aventure"],
-    "socialImpactPercent": 63,
-    "artisansSupported": 6
-  },
-  {
-    "id": "medina-tour",
-    "name": "Visite Guidée de la Médina de Tunis",
-    "location": "Tunis",
-    "region": "Grand Tunis",
+    "id": "bizerte-old-port-walk",
+    "name": "Balade du Vieux Port de Bizerte",
+    "location": "Bizerte",
+    "region": "Bizerte",
     "category": "culture",
     "activityType": "visite",
-    "duration": "3h",
-    "price": 60,
-    "rating": 4.8,
-    "lat": 36.7987,
-    "lng": 10.1704,
-    "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
-    "description": "Déambulation dans les ruelles médiévales avec un guide historien passionné. Souks, zaouias et palais.",
-    "included": ["guide expert", "thé à la menthe", "carte de la médina"],
-    "tags": ["culture", "histoire", "médina"],
-    "socialImpactPercent": 74,
-    "artisansSupported": 22
-  },
-  {
-    "id": "pottery-nabeul",
-    "name": "Initiation Poterie à Nabeul",
-    "location": "Nabeul",
-    "region": "Nabeul",
-    "category": "artisanat",
-    "activityType": "activité",
-    "duration": "3h",
-    "price": 80,
-    "rating": 4.6,
-    "lat": 36.4513,
-    "lng": 10.7353,
-    "image": "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=600&q=80",
-    "description": "Créez votre propre poterie avec un maître artisan dans l'atelier traditionnel de Nabeul.",
-    "included": ["matériaux", "maître artisan", "cuisson et expédition"],
-    "tags": ["artisanat", "créativité", "culture"],
-    "socialImpactPercent": 91,
-    "artisansSupported": 24
-  },
-  {
-    "id": "stargazing-douz",
-    "name": "Nuit d'Étoiles dans le Désert",
-    "location": "Douz",
-    "region": "Kébili",
-    "category": "nature",
-    "activityType": "activité",
-    "duration": "Nuit entière",
-    "price": 280,
-    "rating": 5,
-    "lat": 33.4569,
-    "lng": 9.02,
-    "image": "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=600&q=80",
-    "description": "Campement berbère au cœur du désert, repas traditionnel au feu de bois et nuit étoilée exceptionnelle.",
-    "included": ["tente berbère", "dîner traditionnel", "petit déjeuner", "guide"],
-    "tags": ["nature", "romantique", "unique", "désert"],
-    "socialImpactPercent": 86,
-    "artisansSupported": 14
-  },
-  {
-    "id": "fishing-djerba",
-    "name": "Sortie Pêche Traditionnelle à Djerba",
-    "location": "Djerba",
-    "region": "Médenine",
-    "category": "nature",
-    "activityType": "activité",
-    "duration": "5h",
-    "price": 110,
-    "rating": 4.7,
-    "lat": 33.8075,
-    "lng": 10.8451,
-    "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80",
-    "description": "Rejoignez de vrais pêcheurs djerbiens pour une sortie en mer au lever du soleil. Déjeuner avec le poisson pêché.",
-    "included": ["bateau", "équipement", "déjeuner de fruits de mer"],
-    "tags": ["mer", "authentique", "gastronomie"],
-    "socialImpactPercent": 77,
-    "artisansSupported": 11
-  },
-  {
-    "id": "trekking-ain-draham",
-    "name": "Trek en Forêt de Chênes-Lièges",
-    "location": "Aïn Draham",
-    "region": "Jendouba",
-    "category": "aventure",
-    "activityType": "activité",
-    "duration": "6h",
-    "price": 70,
-    "rating": 4.8,
-    "lat": 36.7867,
-    "lng": 8.6897,
-    "image": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&q=80",
-    "description": "Randonnée guidée à travers les forêts denses du nord tunisien, avec picnic et observation de la faune.",
-    "included": ["guide naturaliste", "picnic", "carte de randonnée"],
-    "tags": ["nature", "randonnée", "aventure"],
-    "socialImpactPercent": 69,
-    "artisansSupported": 7
-  },
-  {
-    "id": "mosaic-sousse",
-    "name": "Atelier Mosaïque de Sousse",
-    "location": "Sousse",
-    "region": "Sousse",
-    "category": "artisanat",
-    "activityType": "activité",
-    "duration": "2h30",
-    "price": 85,
-    "rating": 4.7,
-    "lat": 35.8256,
-    "lng": 10.6369,
-    "image": "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=600&q=80",
-    "description": "Découverte des motifs méditerranéens et création de votre propre petite mosaïque avec un artisan local.",
-    "included": ["atelier guidé", "matériaux", "pièce à emporter"],
-    "tags": ["artisanat", "culture", "photo"],
-    "socialImpactPercent": 93,
-    "artisansSupported": 16
+    "duration": "2h",
+    "price": 31,
+    "rating": 4.4,
+    "lat": 37.2741,
+    "lng": 9.8732,
+    "image": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80",
+    "description": "Promenade entre pont mobile, façades colorées et histoire maritime de la ville.",
+    "included": [
+      "guide",
+      "pause café"
+    ],
+    "tags": [
+      "culture",
+      "port",
+      "photo"
+    ],
+    "socialImpactPercent": 70,
+    "artisansSupported": 1
   },
   {
     "id": "ichkeul-birding",
@@ -184,10 +39,72 @@
     "lng": 9.6722,
     "image": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=600&q=80",
     "description": "Observation guidée des flamants roses et des oiseaux migrateurs dans l'un des écosystèmes les plus précieux de Tunisie.",
-    "included": ["guide nature", "jumelles", "pause locale"],
-    "tags": ["nature", "photo", "famille"],
+    "included": [
+      "guide nature",
+      "jumelles",
+      "pause locale"
+    ],
+    "tags": [
+      "nature",
+      "photo",
+      "famille"
+    ],
     "socialImpactPercent": 71,
-    "artisansSupported": 5
+    "artisansSupported": 3
+  },
+  {
+    "id": "ichkeul-sunrise-hike",
+    "name": "Randonnée Lever du Jour à Ichkeul",
+    "location": "Ichkeul",
+    "region": "Bizerte",
+    "category": "nature",
+    "activityType": "activité",
+    "duration": "3h",
+    "price": 45,
+    "rating": 4.7,
+    "lat": 37.1641,
+    "lng": 9.6728,
+    "image": "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=600&q=80",
+    "description": "Sortie matinale pour profiter des lumières douces et de la biodiversité du parc.",
+    "included": [
+      "guide nature",
+      "jumelles",
+      "collation"
+    ],
+    "tags": [
+      "nature",
+      "aventure",
+      "photo"
+    ],
+    "socialImpactPercent": 74,
+    "artisansSupported": 1
+  },
+  {
+    "id": "dougga-family-discovery",
+    "name": "Dougga en Famille avec Carnet de Jeux",
+    "location": "Dougga",
+    "region": "Béja",
+    "category": "famille",
+    "activityType": "visite",
+    "duration": "2h",
+    "price": 34,
+    "rating": 4.3,
+    "lat": 36.4229,
+    "lng": 9.2194,
+    "image": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=600&q=80",
+    "description": "Visite ludique du site avec défis d’observation et récits accessibles aux enfants.",
+    "included": [
+      "carnet",
+      "guide",
+      "petite collation"
+    ],
+    "tags": [
+      "famille",
+      "histoire",
+      "culture"
+    ],
+    "socialImpactPercent": 66,
+    "artisansSupported": 1
   },
   {
     "id": "dougga-sunset",
@@ -203,29 +120,371 @@
     "lng": 9.2192,
     "image": "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=600&q=80",
     "description": "Visite archéologique en fin d'après-midi au milieu des temples, du théâtre et des vestiges romains dominant la vallée.",
-    "included": ["guide culturel", "transport local", "pause terroir"],
-    "tags": ["histoire", "culture", "photo"],
+    "included": [
+      "guide culturel",
+      "transport local",
+      "pause terroir"
+    ],
+    "tags": [
+      "histoire",
+      "culture",
+      "photo"
+    ],
     "socialImpactPercent": 73,
-    "artisansSupported": 9
+    "artisansSupported": 3
   },
   {
-    "id": "mahdia-boat",
-    "name": "Sortie en Mer des Pêcheurs de Mahdia",
-    "location": "Mahdia",
-    "region": "Mahdia",
-    "category": "mer",
+    "id": "dougga-olive-route",
+    "name": "Route de l’Olive autour de Dougga",
+    "location": "Dougga",
+    "region": "Béja",
+    "category": "gastronomie",
+    "activityType": "visite",
+    "duration": "3h",
+    "price": 43,
+    "rating": 4.5,
+    "lat": 36.4225,
+    "lng": 9.219,
+    "image": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=600&q=80",
+    "description": "Rencontre avec producteurs d’huile d’olive et lecture des paysages agricoles du nord-ouest.",
+    "included": [
+      "dégustation",
+      "guide rural",
+      "transfert court"
+    ],
+    "tags": [
+      "gastronomie",
+      "nature",
+      "terroir"
+    ],
+    "socialImpactPercent": 81,
+    "artisansSupported": 2
+  },
+  {
+    "id": "matmata-cooking-fire",
+    "name": "Cuisine Berbère au Feu de Bois à Matmata",
+    "location": "Matmata",
+    "region": "Gabès",
+    "category": "gastronomie",
+    "activityType": "activité",
+    "duration": "3h",
+    "price": 64,
+    "rating": 4.7,
+    "lat": 33.5431,
+    "lng": 9.9719,
+    "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80",
+    "description": "Préparation d’un repas berbère dans une maison troglodyte avec hôtes du village.",
+    "included": [
+      "ingrédients",
+      "repas partagé",
+      "thé"
+    ],
+    "tags": [
+      "gastronomie",
+      "culture",
+      "berbère"
+    ],
+    "socialImpactPercent": 89,
+    "artisansSupported": 3
+  },
+  {
+    "id": "matmata-story-night",
+    "name": "Veillée Contes & Musique à Matmata",
+    "location": "Matmata",
+    "region": "Gabès",
+    "category": "culture",
+    "activityType": "activité",
+    "duration": "2h",
+    "price": 38,
+    "rating": 4.4,
+    "lat": 33.5415,
+    "lng": 9.9708,
+    "image": "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=600&q=80",
+    "description": "Soirée de contes, chants et mémoire locale dans une cour troglodyte intimiste.",
+    "included": [
+      "animation",
+      "thé",
+      "douceurs locales"
+    ],
+    "tags": [
+      "culture",
+      "soirée",
+      "berbère"
+    ],
+    "socialImpactPercent": 73,
+    "artisansSupported": 2
+  },
+  {
+    "id": "cooking-tunis",
+    "name": "Atelier Cuisine Tunisienne",
+    "location": "Tunis",
+    "region": "Grand Tunis",
+    "category": "gastronomie",
     "activityType": "activité",
     "duration": "4h",
-    "price": 130,
+    "price": 120,
+    "rating": 4.8,
+    "lat": 36.8008,
+    "lng": 10.1711,
+    "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80",
+    "description": "Apprenez à préparer brik, couscous et makroudh dans une maison traditionnelle avec une cheffe locale.",
+    "included": [
+      "ingrédients",
+      "recettes",
+      "dégustation",
+      "thé"
+    ],
+    "tags": [
+      "cuisine",
+      "culture",
+      "famille",
+      "artisanat"
+    ],
+    "socialImpactPercent": 88,
+    "artisansSupported": 3
+  },
+  {
+    "id": "bardo-culinary-walk",
+    "name": "Balade Gourmande autour du Bardo",
+    "location": "Tunis",
+    "region": "Grand Tunis",
+    "category": "gastronomie",
+    "activityType": "activité",
+    "duration": "3h",
+    "price": 55,
+    "rating": 4.7,
+    "lat": 36.8092,
+    "lng": 10.1357,
+    "image": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80",
+    "description": "Circuit gourmand entre échoppes, produits du terroir et spécialités populaires près du Bardo.",
+    "included": [
+      "dégustations",
+      "guide local",
+      "pause café"
+    ],
+    "tags": [
+      "gastronomie",
+      "culture",
+      "marché"
+    ],
+    "socialImpactPercent": 84,
+    "artisansSupported": 3
+  },
+  {
+    "id": "sidi-bou-photo-walk",
+    "name": "Parcours Photo à Sidi Bou Saïd",
+    "location": "Tunis",
+    "region": "Grand Tunis",
+    "category": "photographie",
+    "activityType": "visite",
+    "duration": "2h30",
+    "price": 42,
+    "rating": 4.8,
+    "lat": 36.8704,
+    "lng": 10.3419,
+    "image": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&q=80",
+    "description": "Promenade guidée pour saisir les plus beaux points de vue, portes bleues et panoramas du golfe.",
+    "included": [
+      "guide photo",
+      "pause thé",
+      "spots secrets"
+    ],
+    "tags": [
+      "photographie",
+      "culture",
+      "vue mer"
+    ],
+    "socialImpactPercent": 76,
+    "artisansSupported": 2
+  },
+  {
+    "id": "medina-tour",
+    "name": "Visite Guidée de la Médina de Tunis",
+    "location": "Tunis",
+    "region": "Grand Tunis",
+    "category": "culture",
+    "activityType": "visite",
+    "duration": "3h",
+    "price": 60,
+    "rating": 4.8,
+    "lat": 36.7987,
+    "lng": 10.1704,
+    "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
+    "description": "Déambulation dans les ruelles médiévales avec un guide historien passionné. Souks, zaouias et palais.",
+    "included": [
+      "guide expert",
+      "thé à la menthe",
+      "carte de la médina"
+    ],
+    "tags": [
+      "culture",
+      "histoire",
+      "médina"
+    ],
+    "socialImpactPercent": 74,
+    "artisansSupported": 3
+  },
+  {
+    "id": "ain-draham-cheese-farm",
+    "name": "Ferme & Fromages à Aïn Draham",
+    "location": "Aïn Draham",
+    "region": "Jendouba",
+    "category": "gastronomie",
+    "activityType": "visite",
+    "duration": "2h30",
+    "price": 40,
+    "rating": 4.5,
+    "lat": 36.7865,
+    "lng": 8.6891,
+    "image": "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=600&q=80",
+    "description": "Découverte d’une petite production fermière avec dégustation en pleine montagne.",
+    "included": [
+      "visite",
+      "dégustation",
+      "boisson chaude"
+    ],
+    "tags": [
+      "gastronomie",
+      "nature",
+      "famille"
+    ],
+    "socialImpactPercent": 78,
+    "artisansSupported": 2
+  },
+  {
+    "id": "trekking-ain-draham",
+    "name": "Trek en Forêt de Chênes-Lièges",
+    "location": "Aïn Draham",
+    "region": "Jendouba",
+    "category": "aventure",
+    "activityType": "activité",
+    "duration": "6h",
+    "price": 70,
+    "rating": 4.8,
+    "lat": 36.7867,
+    "lng": 8.6897,
+    "image": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&q=80",
+    "description": "Randonnée guidée à travers les forêts denses du nord tunisien, avec picnic et observation de la faune.",
+    "included": [
+      "guide naturaliste",
+      "picnic",
+      "carte de randonnée"
+    ],
+    "tags": [
+      "nature",
+      "randonnée",
+      "aventure"
+    ],
+    "socialImpactPercent": 69,
+    "artisansSupported": 3
+  },
+  {
+    "id": "tabarka-kayak-cove",
+    "name": "Kayak le long des Criques de Tabarka",
+    "location": "Tabarka",
+    "region": "Jendouba",
+    "category": "aventure",
+    "activityType": "activité",
+    "duration": "2h30",
+    "price": 66,
+    "rating": 4.7,
+    "lat": 36.9548,
+    "lng": 8.7591,
+    "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80",
+    "description": "Navigation en petit groupe entre falaises rouges et eaux claires du nord-ouest.",
+    "included": [
+      "kayak",
+      "gilet",
+      "encadrement"
+    ],
+    "tags": [
+      "mer",
+      "aventure",
+      "nature"
+    ],
+    "socialImpactPercent": 68,
+    "artisansSupported": 1
+  },
+  {
+    "id": "dive-tabarka",
+    "name": "Plongée sous-marine à Tabarka",
+    "location": "Tabarka",
+    "region": "Jendouba",
+    "category": "sport",
+    "activityType": "activité",
+    "duration": "2h",
+    "price": 95,
+    "rating": 4.7,
+    "lat": 36.9545,
+    "lng": 8.7587,
+    "image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&q=80",
+    "description": "Exploration des fonds marins méditerranéens riches en coraux et poissons colorés.",
+    "included": [
+      "équipement",
+      "moniteur diplômé",
+      "photos"
+    ],
+    "tags": [
+      "mer",
+      "sport",
+      "nature",
+      "aventure"
+    ],
+    "socialImpactPercent": 63,
+    "artisansSupported": 3
+  },
+  {
+    "id": "kairouan-rooftop-calligraphy",
+    "name": "Initiation Calligraphie à Kairouan",
+    "location": "Kairouan",
+    "region": "Kairouan",
+    "category": "culture",
+    "activityType": "activité",
+    "duration": "2h",
+    "price": 47,
     "rating": 4.6,
-    "lat": 35.5047,
-    "lng": 11.0622,
-    "image": "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=600&q=80",
-    "description": "Matinée en bateau avec une coopérative locale et déjeuner simple préparé à base de la pêche du jour.",
-    "included": ["bateau", "collation marine", "échange avec pêcheurs"],
-    "tags": ["mer", "authentique", "famille", "gastronomie"],
-    "socialImpactPercent": 79,
-    "artisansSupported": 13
+    "lat": 35.6781,
+    "lng": 10.0961,
+    "image": "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=600&q=80",
+    "description": "Atelier de calligraphie arabe sur terrasse avec introduction aux symboles spirituels.",
+    "included": [
+      "matériel",
+      "encadrement",
+      "papier souvenir"
+    ],
+    "tags": [
+      "culture",
+      "spirituel",
+      "artisanat"
+    ],
+    "socialImpactPercent": 88,
+    "artisansSupported": 2
+  },
+  {
+    "id": "kairouan-morning-medina",
+    "name": "Matinée Guidée dans les Souks de Kairouan",
+    "location": "Kairouan",
+    "region": "Kairouan",
+    "category": "culture",
+    "activityType": "visite",
+    "duration": "3h",
+    "price": 39,
+    "rating": 4.5,
+    "lat": 35.6785,
+    "lng": 10.0958,
+    "image": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
+    "description": "Parcours entre échoppes, médersa et traditions quotidiennes de la médina.",
+    "included": [
+      "guide",
+      "pause sucrée"
+    ],
+    "tags": [
+      "culture",
+      "médina",
+      "histoire"
+    ],
+    "socialImpactPercent": 77,
+    "artisansSupported": 2
   },
   {
     "id": "kairouan-textile",
@@ -241,9 +500,476 @@
     "lng": 10.0963,
     "image": "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=600&q=80",
     "description": "Échange avec des artisanes autour du tissage, des tapis et des motifs emblématiques de Kairouan.",
-    "included": ["démonstration", "atelier court", "thé local"],
-    "tags": ["artisanat", "culture", "spirituel"],
+    "included": [
+      "démonstration",
+      "atelier court",
+      "thé local"
+    ],
+    "tags": [
+      "artisanat",
+      "culture",
+      "spirituel"
+    ],
     "socialImpactPercent": 95,
-    "artisansSupported": 21
+    "artisansSupported": 3
+  },
+  {
+    "id": "sbeitla-roman-morning",
+    "name": "Matinée Romaine à Sbeitla",
+    "location": "Sbeitla",
+    "region": "Kasserine",
+    "category": "histoire",
+    "activityType": "visite",
+    "duration": "2h30",
+    "price": 33,
+    "rating": 4.3,
+    "lat": 35.2325,
+    "lng": 9.0994,
+    "image": "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=600&q=80",
+    "description": "Découverte guidée des temples, forums et mosaïques du site antique.",
+    "included": [
+      "guide",
+      "entrée"
+    ],
+    "tags": [
+      "histoire",
+      "UNESCO",
+      "culture"
+    ],
+    "socialImpactPercent": 68,
+    "artisansSupported": 1
+  },
+  {
+    "id": "sbeitla-craft-snack-stop",
+    "name": "Pause Saveurs & Artisanat à Sbeitla",
+    "location": "Sbeitla",
+    "region": "Kasserine",
+    "category": "artisanat",
+    "activityType": "activité",
+    "duration": "1h45",
+    "price": 24,
+    "rating": 4.1,
+    "lat": 35.2328,
+    "lng": 9.0991,
+    "image": "https://images.unsplash.com/photo-1453614512568-c4024d13c247?w=600&q=80",
+    "description": "Halte conviviale chez de petits producteurs avec tissage local et bouchées traditionnelles.",
+    "included": [
+      "rencontre",
+      "collation",
+      "mini démonstration"
+    ],
+    "tags": [
+      "artisanat",
+      "gastronomie",
+      "local"
+    ],
+    "socialImpactPercent": 82,
+    "artisansSupported": 3
+  },
+  {
+    "id": "stargazing-douz",
+    "name": "Nuit d'Étoiles dans le Désert",
+    "location": "Douz",
+    "region": "Kébili",
+    "category": "nature",
+    "activityType": "activité",
+    "duration": "Nuit entière",
+    "price": 280,
+    "rating": 5,
+    "lat": 33.4569,
+    "lng": 9.02,
+    "image": "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=600&q=80",
+    "description": "Campement berbère au cœur du désert, repas traditionnel au feu de bois et nuit étoilée exceptionnelle.",
+    "included": [
+      "tente berbère",
+      "dîner traditionnel",
+      "petit déjeuner",
+      "guide"
+    ],
+    "tags": [
+      "nature",
+      "romantique",
+      "unique",
+      "désert"
+    ],
+    "socialImpactPercent": 86,
+    "artisansSupported": 3
+  },
+  {
+    "id": "camel-douz",
+    "name": "Randonnée en Dromadaire au Sahara",
+    "location": "Douz",
+    "region": "Kébili",
+    "category": "aventure",
+    "activityType": "activité",
+    "duration": "3h",
+    "price": 150,
+    "rating": 4.9,
+    "lat": 33.4569,
+    "lng": 9.02,
+    "image": "https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=600&q=80",
+    "description": "Traversée des grandes dunes de Douz sur le dos d'un dromadaire, coucher de soleil sur le Sahara inclus.",
+    "included": [
+      "guide berbère",
+      "thé du désert",
+      "photos souvenirs"
+    ],
+    "tags": [
+      "désert",
+      "aventure",
+      "nature"
+    ],
+    "socialImpactPercent": 82,
+    "artisansSupported": 3
+  },
+  {
+    "id": "douz-date-harvest",
+    "name": "Rencontre dans les Palmeraies de Douz",
+    "location": "Douz",
+    "region": "Kébili",
+    "category": "nature",
+    "activityType": "visite",
+    "duration": "2h30",
+    "price": 46,
+    "rating": 4.6,
+    "lat": 33.4583,
+    "lng": 9.0234,
+    "image": "https://images.unsplash.com/photo-1472396961693-142e6e269027?w=600&q=80",
+    "description": "Balade dans la palmeraie avec découverte des dattes, de l’irrigation et du quotidien local.",
+    "included": [
+      "guide local",
+      "dégustation de dattes",
+      "transport court"
+    ],
+    "tags": [
+      "nature",
+      "désert",
+      "authentique"
+    ],
+    "socialImpactPercent": 79,
+    "artisansSupported": 2
+  },
+  {
+    "id": "eljem-history-night",
+    "name": "Lecture Historique Nocturne à El Jem",
+    "location": "El Jem",
+    "region": "Mahdia",
+    "category": "histoire",
+    "activityType": "visite",
+    "duration": "2h",
+    "price": 52,
+    "rating": 4.6,
+    "lat": 35.2966,
+    "lng": 10.7068,
+    "image": "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=600&q=80",
+    "description": "Visite scénarisée autour de l’amphithéâtre et de la vie romaine en Afrique.",
+    "included": [
+      "guide historien",
+      "entrée",
+      "audio"
+    ],
+    "tags": [
+      "histoire",
+      "UNESCO",
+      "culture"
+    ],
+    "socialImpactPercent": 72,
+    "artisansSupported": 1
+  },
+  {
+    "id": "mahdia-medina-photo",
+    "name": "Session Photo dans la Médina de Mahdia",
+    "location": "Mahdia",
+    "region": "Mahdia",
+    "category": "photographie",
+    "activityType": "visite",
+    "duration": "2h",
+    "price": 36,
+    "rating": 4.4,
+    "lat": 35.5049,
+    "lng": 11.0624,
+    "image": "https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=600&q=80",
+    "description": "Parcours tranquille dans les ruelles blanches et bleues avec vues sur mer.",
+    "included": [
+      "guide local",
+      "spot photo",
+      "pause café"
+    ],
+    "tags": [
+      "photographie",
+      "médina",
+      "mer"
+    ],
+    "socialImpactPercent": 67,
+    "artisansSupported": 1
+  },
+  {
+    "id": "mahdia-boat",
+    "name": "Sortie en Mer des Pêcheurs de Mahdia",
+    "location": "Mahdia",
+    "region": "Mahdia",
+    "category": "mer",
+    "activityType": "activité",
+    "duration": "4h",
+    "price": 130,
+    "rating": 4.6,
+    "lat": 35.5047,
+    "lng": 11.0622,
+    "image": "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=600&q=80",
+    "description": "Matinée en bateau avec une coopérative locale et déjeuner simple préparé à base de la pêche du jour.",
+    "included": [
+      "bateau",
+      "collation marine",
+      "échange avec pêcheurs"
+    ],
+    "tags": [
+      "mer",
+      "authentique",
+      "famille",
+      "gastronomie"
+    ],
+    "socialImpactPercent": 79,
+    "artisansSupported": 3
+  },
+  {
+    "id": "djerba-sunset-bike",
+    "name": "Balade Vélo au Coucher du Soleil à Djerba",
+    "location": "Djerba",
+    "region": "Médenine",
+    "category": "nature",
+    "activityType": "activité",
+    "duration": "2h",
+    "price": 48,
+    "rating": 4.5,
+    "lat": 33.8201,
+    "lng": 10.9712,
+    "image": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=600&q=80",
+    "description": "Sortie douce à vélo entre villages, palmiers et lumière dorée en fin de journée.",
+    "included": [
+      "vélo",
+      "guide",
+      "eau"
+    ],
+    "tags": [
+      "nature",
+      "photo",
+      "famille"
+    ],
+    "socialImpactPercent": 71,
+    "artisansSupported": 1
+  },
+  {
+    "id": "djerba-pottery-route",
+    "name": "Route des Potiers à Guellala",
+    "location": "Djerba",
+    "region": "Médenine",
+    "category": "artisanat",
+    "activityType": "activité",
+    "duration": "3h30",
+    "price": 72,
+    "rating": 4.7,
+    "lat": 33.7368,
+    "lng": 10.8909,
+    "image": "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=600&q=80",
+    "description": "Immersion dans les ateliers de Guellala avec démonstration et pièce façonnée sur place.",
+    "included": [
+      "atelier",
+      "argile",
+      "thé local"
+    ],
+    "tags": [
+      "artisanat",
+      "culture",
+      "famille"
+    ],
+    "socialImpactPercent": 92,
+    "artisansSupported": 3
+  },
+  {
+    "id": "fishing-djerba",
+    "name": "Sortie Pêche Traditionnelle à Djerba",
+    "location": "Djerba",
+    "region": "Médenine",
+    "category": "nature",
+    "activityType": "activité",
+    "duration": "5h",
+    "price": 110,
+    "rating": 4.7,
+    "lat": 33.8075,
+    "lng": 10.8451,
+    "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80",
+    "description": "Rejoignez de vrais pêcheurs djerbiens pour une sortie en mer au lever du soleil. Déjeuner avec le poisson pêché.",
+    "included": [
+      "bateau",
+      "équipement",
+      "déjeuner de fruits de mer"
+    ],
+    "tags": [
+      "mer",
+      "authentique",
+      "gastronomie"
+    ],
+    "socialImpactPercent": 77,
+    "artisansSupported": 3
+  },
+  {
+    "id": "hammamet-medina-ceramics",
+    "name": "Atelier Céramique à Hammamet",
+    "location": "Hammamet",
+    "region": "Nabeul",
+    "category": "artisanat",
+    "activityType": "activité",
+    "duration": "2h30",
+    "price": 58,
+    "rating": 4.6,
+    "lat": 36.3996,
+    "lng": 10.6138,
+    "image": "https://images.unsplash.com/photo-1517705008128-361805f42e86?w=600&q=80",
+    "description": "Initiation aux motifs du Cap Bon avec création d’une pièce décorative à emporter.",
+    "included": [
+      "atelier",
+      "matériel",
+      "pièce finale"
+    ],
+    "tags": [
+      "artisanat",
+      "créativité",
+      "famille"
+    ],
+    "socialImpactPercent": 90,
+    "artisansSupported": 3
+  },
+  {
+    "id": "kerkouane-coastal-trail",
+    "name": "Balade Archéo-Nature à Kerkouane",
+    "location": "Kerkouane",
+    "region": "Nabeul",
+    "category": "histoire",
+    "activityType": "visite",
+    "duration": "3h",
+    "price": 44,
+    "rating": 4.5,
+    "lat": 36.9476,
+    "lng": 11.0979,
+    "image": "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=600&q=80",
+    "description": "Marche guidée entre ruines puniques, falaises et paysages marins du Cap Bon.",
+    "included": [
+      "guide culturel",
+      "pause locale"
+    ],
+    "tags": [
+      "histoire",
+      "nature",
+      "photo"
+    ],
+    "socialImpactPercent": 74,
+    "artisansSupported": 1
+  },
+  {
+    "id": "pottery-nabeul",
+    "name": "Initiation Poterie à Nabeul",
+    "location": "Nabeul",
+    "region": "Nabeul",
+    "category": "artisanat",
+    "activityType": "activité",
+    "duration": "3h",
+    "price": 80,
+    "rating": 4.6,
+    "lat": 36.4513,
+    "lng": 10.7353,
+    "image": "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=600&q=80",
+    "description": "Créez votre propre poterie avec un maître artisan dans l'atelier traditionnel de Nabeul.",
+    "included": [
+      "matériaux",
+      "maître artisan",
+      "cuisson et expédition"
+    ],
+    "tags": [
+      "artisanat",
+      "créativité",
+      "culture"
+    ],
+    "socialImpactPercent": 91,
+    "artisansSupported": 3
+  },
+  {
+    "id": "mosaic-sousse",
+    "name": "Atelier Mosaïque de Sousse",
+    "location": "Sousse",
+    "region": "Sousse",
+    "category": "artisanat",
+    "activityType": "activité",
+    "duration": "2h30",
+    "price": 85,
+    "rating": 4.7,
+    "lat": 35.8256,
+    "lng": 10.6369,
+    "image": "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=600&q=80",
+    "description": "Découverte des motifs méditerranéens et création de votre propre petite mosaïque avec un artisan local.",
+    "included": [
+      "atelier guidé",
+      "matériaux",
+      "pièce à emporter"
+    ],
+    "tags": [
+      "artisanat",
+      "culture",
+      "photo"
+    ],
+    "socialImpactPercent": 93,
+    "artisansSupported": 3
+  },
+  {
+    "id": "sousse-ribat-sunset",
+    "name": "Coucher de Soleil au Ribat de Sousse",
+    "location": "Sousse",
+    "region": "Sousse",
+    "category": "histoire",
+    "activityType": "visite",
+    "duration": "1h30",
+    "price": 28,
+    "rating": 4.4,
+    "lat": 35.8252,
+    "lng": 10.6365,
+    "image": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=600&q=80",
+    "description": "Visite courte du monument avec lumière de fin de journée sur la médina.",
+    "included": [
+      "guide court",
+      "entrée"
+    ],
+    "tags": [
+      "histoire",
+      "photo",
+      "médina"
+    ],
+    "socialImpactPercent": 63,
+    "artisansSupported": 1
+  },
+  {
+    "id": "sousse-seafood-market-tour",
+    "name": "Marché aux Poissons & Dégustation à Sousse",
+    "location": "Sousse",
+    "region": "Sousse",
+    "category": "gastronomie",
+    "activityType": "visite",
+    "duration": "2h30",
+    "price": 49,
+    "rating": 4.6,
+    "lat": 35.8261,
+    "lng": 10.6374,
+    "image": "https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=600&q=80",
+    "description": "Passage au marché puis dégustation simple chez un restaurateur du port.",
+    "included": [
+      "guide",
+      "dégustation",
+      "boisson"
+    ],
+    "tags": [
+      "gastronomie",
+      "mer",
+      "marché"
+    ],
+    "socialImpactPercent": 75,
+    "artisansSupported": 2
   }
 ]

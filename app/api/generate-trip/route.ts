@@ -3,15 +3,19 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { getExperiencesByIds } from '@/lib/tripPlanner';
 import { buildMockTrip, hydrateGeneratedTrip } from '@/lib/tripGenerator';
 
-const getTripModel = () => {
-  const apiKey = process.env.GEMINI_API_KEY || process.env.GEMINI_API || process.env.gemini_api;
+const getTripModel = (modelName: string) => {
+  const apiKey =
+    process.env.GEMINI_API_KEY ||
+    process.env.GOOGLE_API_KEY ||
+    process.env.GEMINI_API ||
+    process.env.gemini_api;
   if (!apiKey) {
     throw new Error('Missing GEMINI_API_KEY environment variable');
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);
   return genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash',
+    model: modelName,
     generationConfig: {
       maxOutputTokens: 4096,
       temperature: 0.7,
@@ -96,14 +100,32 @@ Contraintes :
 - Si transport = besoin de transport, inclure des activités de type "transport" (transferts/navettes).
 - Si guide local = oui, mentionner explicitement au moins une activité guidée par jour.
 - Si des régions sont précisées, concentre le voyage prioritairement sur ces régions.
+- Si plusieurs régions sont choisies, garde la même région sur des jours successifs avant de passer à la suivante.
 - Si des dates sont précisées, renseigne le champ "date" de chaque jour.
 Réponds UNIQUEMENT avec le JSON, aucune explication.`;
 
-    const model = getTripModel();
-    const message = await model.generateContent(prompt);
+    const preferredModels = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b'];
+    let text = '';
+    let lastError: unknown = null;
+
+    for (const modelName of preferredModels) {
+      try {
+        const model = getTripModel(modelName);
+        const message = await model.generateContent(prompt);
+        text = message.response.text().trim();
+        if (text) {
+          break;
+        }
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    if (!text) {
+      throw lastError || new Error('No trip content produced');
+    }
 
     // Extract JSON from response
-    const text = message.response.text().trim();
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('No JSON found in response');
 
