@@ -300,7 +300,7 @@ function pickCities(input: TripInput) {
     ...(hasRegionConstraint ? [] : defaults),
   ].filter(Boolean) as string[];
 
-  const regionOrder = Array.from(
+  const regionOrder: string[] = Array.from(
     new Set(
       (
         hasRegionConstraint
