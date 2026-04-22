@@ -1,8 +1,9 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { useAuth } from '@/context/AuthContext';
 
-type Currency = 'TND' | 'EUR' | 'USD';
+export type Currency = 'TND' | 'EUR' | 'USD';
 
 interface CurrencyContextType {
   currency: Currency;
@@ -33,7 +34,16 @@ const CurrencyContext = createContext<CurrencyContextType>({
 });
 
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
+  const { profile } = useAuth();
   const [currency, setCurrency] = useState<Currency>('TND');
+
+  useEffect(() => {
+    const preferredCurrency = profile?.preferred_currency;
+
+    if (preferredCurrency === 'TND' || preferredCurrency === 'EUR' || preferredCurrency === 'USD') {
+      setCurrency(preferredCurrency);
+    }
+  }, [profile?.preferred_currency]);
 
   const convert = useCallback(
     (amountTND: number) => {

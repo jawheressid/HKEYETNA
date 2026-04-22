@@ -24,11 +24,24 @@ const TRANSPORT_OPTIONS: Array<{ id: TransportPreference; label: string; desc: s
   { id: 'no-preference', label: 'Peu importe', desc: 'L’IA décide selon l’itinéraire', emoji: '🧭' },
 ];
 
-interface Props {
-  onTripGenerated: (trip: any) => void;
+export interface TripGeneratorInput {
+  budget: number;
+  duration: number;
+  interests: string[];
+  preferences: {
+    includeWorkshops: boolean;
+    transportPreference: TransportPreference;
+    wantsGuide: boolean;
+    notes: string;
+  };
 }
 
-export default function TripGenerator({ onTripGenerated }: Props) {
+interface Props {
+  onTripGenerated: (trip: any, input: TripGeneratorInput) => void;
+  onReset?: () => void;
+}
+
+export default function TripGenerator({ onTripGenerated, onReset }: Props) {
   const { format } = useCurrency();
   const [budget, setBudget] = useState(2000);
   const [duration, setDuration] = useState(5);
@@ -66,7 +79,17 @@ export default function TripGenerator({ onTripGenerated }: Props) {
         }),
       });
       const trip = await res.json();
-      onTripGenerated(trip);
+      onTripGenerated(trip, {
+        budget,
+        duration,
+        interests: selectedInterests,
+        preferences: {
+          includeWorkshops,
+          transportPreference,
+          wantsGuide,
+          notes: extraPreferences.trim(),
+        },
+      });
     } catch (err) {
       console.error(err);
     } finally {
@@ -426,7 +449,13 @@ export default function TripGenerator({ onTripGenerated }: Props) {
                           Découvrez votre voyage personnalisé ci-dessous
                         </p>
                       </div>
-                      <button onClick={() => setStep(1)} className="btn-secondary">
+                      <button
+                        onClick={() => {
+                          onReset?.();
+                          setStep(1);
+                        }}
+                        className="btn-secondary"
+                      >
                         Modifier les préférences
                       </button>
                     </>

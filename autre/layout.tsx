@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { AuthProvider } from '@/context/AuthContext';
 import { CurrencyProvider } from '@/context/CurrencyContext';
+import { AuthProvider } from '@/context/AuthContext';
 import Navbar from '@/components/Navbar';
 import ChatbotWidget from '@/components/ChatbotWidget';
 
 export const metadata: Metadata = {
   title: 'HKEYETNA — Explorez la Tunisie',
-  description: 'Plateforme de tourisme IA pour découvrir la Tunisie authentique. Générez des voyages personnalisés, explorez des lieux magiques.',
+  description: 'Plateforme de tourisme IA pour découvrir la Tunisie authentique.',
   keywords: 'Tunisie, tourisme, voyage, IA, itinéraire, hôtels, activités',
 };
 
@@ -20,33 +20,17 @@ const BACKGROUND_STICKERS = [
   { src: '/branding/sticker-flowers.png', alt: 'Fleurs', style: { top: '24%', right: '6%', width: 'clamp(56px, 8vw, 108px)', transform: 'rotate(6deg)' } },
   { src: '/branding/sticker-door.png', alt: 'Porte', style: { top: '54%', left: '5%', width: 'clamp(62px, 9vw, 120px)', transform: 'rotate(-8deg)' } },
   { src: '/branding/sticker-fish.png', alt: 'Poisson', style: { top: '63%', left: '34%', width: 'clamp(66px, 10vw, 138px)', transform: 'rotate(10deg)' } },
-  { src: '/branding/sticker-arabic.png', alt: 'Calligraphie', style: { top: '66%', right: '7%', width: 'clamp(92px, 14vw, 190px)', transform: 'rotate(-12deg)' } },
-  { src: '/branding/sticker-fan.png', alt: 'Eventail 2', style: { top: '84%', left: '19%', width: 'clamp(52px, 6vw, 92px)', transform: 'rotate(14deg)' } },
-  { src: '/branding/sticker-khamsa.png', alt: 'Khamsa 2', style: { top: '77%', right: '28%', width: 'clamp(46px, 6vw, 86px)', transform: 'rotate(-10deg)' } },
-  { src: '/branding/sticker-fish.png', alt: 'Poisson 2', style: { top: '46%', right: '18%', width: 'clamp(58px, 9vw, 120px)', transform: 'rotate(-7deg)' } },
 ];
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
       <body className="min-h-screen bg-parchment">
         <div aria-hidden className="site-sticker-background">
           {BACKGROUND_STICKERS.map((sticker, index) => (
-            <img
-              key={`${sticker.src}-${index}`}
-              src={sticker.src}
-              alt={sticker.alt}
-              className="site-sticker-item"
-              style={sticker.style}
-              loading="lazy"
-            />
+            <img key={`${sticker.src}-${index}`} src={sticker.src} alt={sticker.alt} className="site-sticker-item" style={sticker.style} loading="lazy" />
           ))}
         </div>
-
         <div className="relative z-10">
           <AuthProvider>
             <CurrencyProvider>

@@ -1,13 +1,10 @@
 'use client';
 
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MapPin, Star, ArrowRight, Compass } from 'lucide-react';
+import { MapPin, Star, ArrowRight, Sparkles } from 'lucide-react';
 import HeroSection from '@/components/HeroSection';
-import TripGenerator from '@/components/TripGenerator';
-import ItineraryView from '@/components/ItineraryView';
 import SocialFeed from '@/components/SocialFeed';
 import MapView from '@/components/MapView';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -100,8 +97,6 @@ function ExperienceCard({ exp }: { exp: (typeof experiencesData)[0] }) {
 }
 
 export default function HomePage() {
-  const [generatedTrip, setGeneratedTrip] = useState<any>(null);
-
   const mapPlaces = placesData.map(p => ({
     id: p.id,
     name: p.name,
@@ -212,21 +207,113 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Trip Generator */}
+      {/* Static Trip Preview */}
       <div className="bg-sand-50/50 border-y border-sand-200/50">
-        <TripGenerator onTripGenerated={setGeneratedTrip} />
-      </div>
+        <section id="trip" className="py-24 px-6">
+          <div className="max-w-5xl mx-auto">
+            <motion.div
+              initial={false}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+              className="text-center mb-16"
+            >
+              <div className="inline-flex items-center gap-2 bg-terracotta-50 border border-terracotta-200 text-terracotta-600 text-sm font-medium px-4 py-2 rounded-full mb-6">
+                <Sparkles size={14} />
+                Propulsé par l&apos;Intelligence Artificielle
+              </div>
+              <h2 className="font-display text-5xl md:text-6xl font-light text-midnight mb-5">
+                Votre voyage,
+                <span className="text-terracotta-500 italic"> personnalisé</span>
+              </h2>
+              <p className="font-body text-lg text-midnight/60 max-w-xl mx-auto mb-10">
+                Décrivez vos envies, notre IA compose un itinéraire sur mesure adapté à votre budget et vos intérêts.
+              </p>
+            </motion.div>
 
-      {/* Generated Itinerary */}
-      {generatedTrip && (
-        <motion.div
-          initial={false}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <ItineraryView trip={generatedTrip} />
-        </motion.div>
-      )}
+            <motion.div
+              initial={false}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="bg-white rounded-5xl shadow-xl border border-sand-100 overflow-hidden mb-10 p-8 md:p-12"
+            >
+              <div className="flex flex-wrap items-center gap-3 mb-8">
+                <div className="tag">Exemple — 3 jours à Tunis &amp; Djerba</div>
+                <div className="tag bg-olive-50 text-olive-700">Budget: 1 800 DT</div>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-4">
+                {[
+                  {
+                    day: 1,
+                    city: 'Tunis',
+                    emoji: '🏛️',
+                    activities: ['Médina & Zitouna', 'Déjeuner Dar El Jeld', 'Musée du Bardo'],
+                    hotel: 'La Maison Blanche ★★★★★',
+                  },
+                  {
+                    day: 2,
+                    city: 'Carthage',
+                    emoji: '🏺',
+                    activities: ['Sites antiques', 'Sidi Bou Saïd', 'Atelier poterie'],
+                    hotel: 'Hotel Majestic Tunis ★★★★',
+                  },
+                  {
+                    day: 3,
+                    city: 'Djerba',
+                    emoji: '🏖️',
+                    activities: ['Houmt Souk', 'Plage Sidi Mahrez', 'Dîner Dar Jerba'],
+                    hotel: 'Hasdrubal Thalassa ★★★★★',
+                  },
+                ].map((day) => (
+                  <div key={day.day} className="bg-sand-50 rounded-3xl p-5 border border-sand-100">
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="w-8 h-8 bg-terracotta-500 rounded-full flex items-center justify-center text-white font-display font-bold text-sm">
+                        {day.day}
+                      </div>
+                      <div>
+                        <span className="text-lg">{day.emoji}</span>
+                        <span className="font-display font-medium text-midnight ml-1">{day.city}</span>
+                      </div>
+                    </div>
+
+                    <ul className="space-y-2 mb-4">
+                      {day.activities.map((activity) => (
+                        <li key={activity} className="flex items-start gap-2 font-body text-xs text-midnight/70">
+                          <span className="text-terracotta-400 mt-0.5">✦</span>
+                          {activity}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="pt-3 border-t border-sand-200">
+                      <p className="font-body text-xs text-midnight/40">{day.hotel}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="relative mt-6">
+                <div className="absolute inset-0 bg-gradient-to-t from-white via-white/85 to-transparent rounded-3xl z-10 flex flex-col items-center justify-end pb-8 gap-4">
+                  <p className="font-body text-midnight/60 text-sm text-center max-w-sm">
+                    Créez un compte pour générer votre propre itinéraire personnalisé.
+                  </p>
+                  <Link href="/login" className="btn-primary flex items-center gap-2 text-sm px-8">
+                    <Sparkles size={15} />
+                    Créer mon propre voyage
+                  </Link>
+                </div>
+
+                <div className="blur-sm pointer-events-none">
+                  <div className="h-20 bg-sand-100 rounded-2xl mb-3" />
+                  <div className="h-16 bg-sand-50 rounded-2xl" />
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      </div>
 
       {/* Social Feed */}
       <SocialFeed />

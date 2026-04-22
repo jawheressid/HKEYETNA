@@ -4,17 +4,22 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import CurrencySwitcher from './CurrencySwitcher';
+import { useAuth } from '@/context/AuthContext';
 import { Menu, X } from 'lucide-react';
 
 const navLinks = [
   { href: '/', label: 'Accueil' },
   { href: '/explore', label: 'Explorer' },
-  { href: '/#trip', label: 'Planifier' },
+  { href: '/trip/new', label: 'Planifier' },
 ];
 
 export default function Navbar() {
+  const { user, profile } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const initial = (profile?.full_name ?? profile?.email ?? 'U')[0]?.toUpperCase() ?? 'U';
+  const firstName = profile?.full_name?.split(' ')[0] ?? 'Profil';
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
@@ -60,9 +65,22 @@ export default function Navbar() {
         {/* Right Actions */}
         <div className="hidden md:flex items-center gap-4">
           <CurrencySwitcher />
-          <Link href="/#trip" className="btn-primary text-sm py-2.5 px-5">
-            Créer mon voyage
-          </Link>
+          {user ? (
+            <Link href="/profile" className="flex items-center gap-2 bg-sand-100 hover:bg-sand-200 px-4 py-2.5 rounded-full transition-colors">
+              <div className="w-7 h-7 rounded-full bg-terracotta-500 flex items-center justify-center">
+                <span className="text-white text-xs font-display font-bold">
+                  {initial}
+                </span>
+              </div>
+              <span className="font-body text-sm font-semibold text-midnight">
+                {firstName}
+              </span>
+            </Link>
+          ) : (
+            <Link href="/login" className="btn-primary text-sm py-2.5 px-5">
+              Créer mon voyage
+            </Link>
+          )}
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -96,9 +114,15 @@ export default function Navbar() {
               ))}
               <div className="pt-3 border-t border-sand-200 flex items-center justify-between">
                 <CurrencySwitcher />
-                <Link href="/#trip" className="btn-primary text-sm py-2 px-4" onClick={() => setMenuOpen(false)}>
-                  Créer mon voyage
-                </Link>
+                {user ? (
+                  <Link href="/profile" className="btn-primary text-sm py-2 px-4" onClick={() => setMenuOpen(false)}>
+                    Mon profil
+                  </Link>
+                ) : (
+                  <Link href="/login" className="btn-primary text-sm py-2 px-4" onClick={() => setMenuOpen(false)}>
+                    Connexion
+                  </Link>
+                )}
               </div>
             </div>
           </motion.div>

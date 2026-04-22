@@ -18,8 +18,9 @@ const getTripModel = () => {
 };
 
 export async function POST(request: NextRequest) {
+  const body = await request.json().catch(() => ({}));
+
   try {
-    const body = await request.json();
     const { budget, duration, interests, startCity, preferences } = body;
     const safeInterests = Array.isArray(interests) ? interests : ['culture'];
     const includeWorkshops = Boolean(preferences?.includeWorkshops);
@@ -100,7 +101,6 @@ Réponds UNIQUEMENT avec le JSON, aucune explication.`;
     console.error('Trip generation error:', error);
     // Return fallback mock data
     const { buildMockTrip } = await import('@/lib/tripGenerator');
-    const body = await request.json().catch(() => ({}));
     const fallback = buildMockTrip({
       budget: body.budget || 1500,
       duration: body.duration || 3,
