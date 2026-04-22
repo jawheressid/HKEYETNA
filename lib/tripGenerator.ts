@@ -127,6 +127,10 @@ function clampArtisansSupported(value?: number) {
   return Math.min(value ?? 0, 3);
 }
 
+function isNonEmptyString(value: string | null | undefined): value is string {
+  return typeof value === 'string' && value.length > 0;
+}
+
 function buildRestaurantMeal({
   time,
   city,
@@ -298,7 +302,7 @@ function pickCities(input: TripInput) {
     ...regionSeedCities,
     ...filteredInterestCities,
     ...(hasRegionConstraint ? [] : defaults),
-  ].filter(Boolean) as string[];
+  ].filter(isNonEmptyString);
 
   const regionOrder: string[] = Array.from(
     new Set(
@@ -307,10 +311,10 @@ function pickCities(input: TripInput) {
           ? input.regions || []
           : [
               ...selectedExperiences.map((experience) => experience.region),
-              ...candidates.map((city) => getRegionForCity(city)).filter(Boolean),
-              ...defaults.map((city) => getRegionForCity(city)).filter(Boolean),
+              ...candidates.map((city) => getRegionForCity(city)).filter(isNonEmptyString),
+              ...defaults.map((city) => getRegionForCity(city)).filter(isNonEmptyString),
             ]
-      ).filter(Boolean)
+      ).filter(isNonEmptyString)
     )
   );
 
