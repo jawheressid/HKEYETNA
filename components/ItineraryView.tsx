@@ -584,7 +584,7 @@ export default function ItineraryView({ trip }: Props) {
                                           ))
                                         ) : (
                                           <div className="md:col-span-2 bg-sand-50 border border-sand-200 rounded-2xl p-4 font-body text-sm text-midnight/60">
-                                            Aucune alternative trouvée pour le type "{activity.type}" dans cette zone. Essayez une autre activité ou une autre région.
+                                            Aucune alternative trouvée pour le type &quot;{activity.type}&quot; dans cette zone. Essayez une autre activité ou une autre région.
                                           </div>
                                         )}
                                       </div>

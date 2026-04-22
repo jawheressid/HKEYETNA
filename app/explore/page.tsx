@@ -136,7 +136,7 @@ export default function ExplorePage() {
               <span className="text-sand-300 italic"> Tunisie</span>
             </h1>
             <p className="font-body text-xl text-white/60 max-w-lg">
-              Découvrez les trésors cachés et les incontournables d'une destination aux mille visages.
+              Découvrez les trésors cachés et les incontournables d&apos;une destination aux mille visages.
             </p>
           </motion.div>
         </div>
@@ -282,7 +282,7 @@ export default function ExplorePage() {
               >
                 <div className="text-6xl mb-4">🔍</div>
                 <h3 className="font-display text-2xl font-light text-midnight mb-2">Aucun résultat</h3>
-                <p className="font-body text-midnight/50">Essayez d'autres mots-clés ou filtres</p>
+                <p className="font-body text-midnight/50">Essayez d&apos;autres mots-clés ou filtres</p>
               </motion.div>
             )}
           </motion.div>

@@ -111,7 +111,7 @@ function TripCard({ trip, onDelete, onArchive }: { trip: Trip; onDelete: (id: st
           href={`/trip/${trip.id}`}
           className="flex items-center justify-between w-full bg-sand-50 hover:bg-terracotta-50 hover:text-terracotta-600 rounded-2xl px-4 py-3 font-body text-sm font-semibold text-midnight/70 transition-all group"
         >
-          Voir l'itinéraire
+          Voir l&apos;itinéraire
           <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
@@ -311,7 +311,7 @@ export default function ProfilePage() {
             >
               <div>
                 <p className="font-display text-xl font-medium text-white mb-0.5">Nouveau voyage</p>
-                <p className="font-body text-sm text-white/70">Générez un itinéraire personnalisé avec l'IA</p>
+                <p className="font-body text-sm text-white/70">Générez un itinéraire personnalisé avec l&apos;IA</p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:bg-white/30 transition-colors">
                 <Plus size={22} className="text-white" />
