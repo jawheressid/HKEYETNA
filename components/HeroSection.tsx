@@ -54,8 +54,8 @@ export default function HeroSection() {
   const current = HERO_IMAGES[activeImg];
 
   return (
-    <section className="relative overflow-hidden pt-36 pb-20 md:pt-40 md:pb-28 px-6">
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-14 items-center">
+    <section className="relative overflow-hidden pt-28 pb-16 md:pt-40 md:pb-28 px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
         <div>
           <motion.div
             initial={{ opacity: 0, y: 18 }}
@@ -69,7 +69,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="font-display text-5xl sm:text-6xl md:text-7xl font-medium text-midnight leading-[0.95] mb-6"
+            className="font-display text-4xl sm:text-6xl md:text-7xl font-medium text-midnight leading-[0.95] mb-6"
           >
             Une interface
             <br />
@@ -82,7 +82,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="font-body text-lg text-midnight/65 mb-9 max-w-xl leading-relaxed"
+            className="font-body text-base sm:text-lg text-midnight/65 mb-8 sm:mb-9 max-w-xl leading-relaxed"
           >
             Inspirez-vous, planifiez, puis générez un itinéraire complet avec météo, budget et recommandations locales dans une expérience élégante.
           </motion.p>
@@ -91,14 +91,14 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.4 }}
-            className="flex flex-wrap gap-4 mb-12"
+            className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4 mb-10 sm:mb-12"
           >
-            <Link href="/#trip" className="btn-primary text-base px-8 py-4">
+            <Link href="/#trip" className="btn-primary text-base px-6 sm:px-8 py-4 text-center">
               Créer mon voyage
             </Link>
             <Link
               href="/explore"
-              className="btn-secondary text-base px-8 py-4 inline-flex items-center gap-2"
+              className="btn-secondary text-base px-6 sm:px-8 py-4 inline-flex items-center justify-center gap-2 text-center"
             >
               <Play size={16} />
               Explorer la Tunisie
@@ -109,7 +109,7 @@ export default function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="grid grid-cols-3 gap-4 max-w-lg"
+            className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-lg"
           >
             {STATS.map((stat) => (
               <div key={stat.label} className="bg-white/80 border border-white rounded-3xl px-4 py-4 text-center shadow-lg shadow-sand-500/10">
@@ -127,7 +127,7 @@ export default function HeroSection() {
           className="relative"
         >
           <div className="surface-card p-4 sm:p-5">
-            <div className="relative rounded-[1.75rem] overflow-hidden h-[420px] sm:h-[500px]">
+            <div className="relative rounded-[1.75rem] overflow-hidden h-[360px] sm:h-[500px]">
               {HERO_IMAGES.map((img, i) => (
                 <motion.img
                   key={i}
@@ -142,7 +142,7 @@ export default function HeroSection() {
 
               <div className="absolute inset-0 bg-gradient-to-t from-midnight/75 via-midnight/20 to-transparent" />
 
-              <div className="absolute top-4 left-4 bg-white/85 backdrop-blur-md rounded-2xl px-4 py-3 border border-white/80 shadow-lg">
+              <div className="absolute top-4 left-4 right-4 sm:right-auto bg-white/85 backdrop-blur-md rounded-2xl px-4 py-3 border border-white/80 shadow-lg">
                 <p className="font-body text-xs text-midnight/50 mb-1">Destination active</p>
                 <div className="flex items-center gap-2 text-midnight">
                   <MapPin size={14} className="text-terracotta-500" />
@@ -163,7 +163,7 @@ export default function HeroSection() {
                       5h planifié
                     </div>
                   </div>
-                  <div className="grid grid-cols-3 gap-2 text-xs font-body text-midnight/65">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-body text-midnight/65">
                     <div className="bg-sand-50 rounded-2xl p-2.5">
                       <p className="text-midnight/40">Matin</p>
                       <p className="font-semibold">Médina</p>
@@ -182,7 +182,7 @@ export default function HeroSection() {
             </div>
           </div>
 
-          <div className="absolute -bottom-6 -right-3 sm:-right-6 bg-white/92 backdrop-blur-md rounded-3xl px-4 py-3 border border-white shadow-xl w-52">
+          <div className="absolute -bottom-5 right-3 sm:-right-6 bg-white/92 backdrop-blur-md rounded-3xl px-4 py-3 border border-white shadow-xl w-44 sm:w-52">
             <div className="flex items-center gap-2 mb-1.5">
               <Star size={13} className="text-sand-500" fill="currentColor" />
               <p className="font-body text-xs text-midnight/50">Satisfaction voyage</p>
@@ -193,7 +193,7 @@ export default function HeroSection() {
         </motion.div>
       </div>
 
-      <div className="max-w-7xl mx-auto mt-8 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto mt-6 sm:mt-8 flex items-center justify-between">
         <div className="flex gap-2">
           {HERO_IMAGES.map((_, i) => (
             <button

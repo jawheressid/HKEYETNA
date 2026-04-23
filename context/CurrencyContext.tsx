@@ -38,6 +38,17 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   const [currency, setCurrency] = useState<Currency>('TND');
 
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const storedCurrency = window.localStorage.getItem('preferred_currency');
+    if (storedCurrency === 'TND' || storedCurrency === 'EUR' || storedCurrency === 'USD') {
+      setCurrency(storedCurrency);
+    }
+  }, []);
+
+  useEffect(() => {
     const preferredCurrency = profile?.preferred_currency;
 
     if (preferredCurrency === 'TND' || preferredCurrency === 'EUR' || preferredCurrency === 'USD') {
@@ -63,9 +74,17 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     [currency, convert]
   );
 
+  const handleSetCurrency = useCallback((nextCurrency: Currency) => {
+    setCurrency(nextCurrency);
+
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('preferred_currency', nextCurrency);
+    }
+  }, []);
+
   return (
     <CurrencyContext.Provider
-      value={{ currency, setCurrency, convert, format, symbol: SYMBOLS[currency] }}
+      value={{ currency, setCurrency: handleSetCurrency, convert, format, symbol: SYMBOLS[currency] }}
     >
       {children}
     </CurrencyContext.Provider>

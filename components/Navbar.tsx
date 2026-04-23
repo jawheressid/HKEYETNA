@@ -116,14 +116,14 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
-              <div className="pt-3 border-t border-sand-200 flex items-center justify-between">
-                <CurrencySwitcher />
+              <div className="pt-3 border-t border-sand-200 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:justify-between">
+                <CurrencySwitcher mobile />
                 {user ? (
-                  <Link href="/profile" className="btn-primary text-sm py-2 px-4" onClick={() => setMenuOpen(false)}>
+                  <Link href="/profile" className="btn-primary text-sm py-3 px-4 text-center" onClick={() => setMenuOpen(false)}>
                     Mon profil
                   </Link>
                 ) : (
-                  <Link href="/login" className="btn-primary text-sm py-2 px-4" onClick={() => setMenuOpen(false)}>
+                  <Link href="/login" className="btn-primary text-sm py-3 px-4 text-center" onClick={() => setMenuOpen(false)}>
                     Connexion
                   </Link>
                 )}

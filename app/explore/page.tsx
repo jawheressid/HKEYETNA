@@ -118,7 +118,7 @@ export default function ExplorePage() {
   return (
     <div className="bg-parchment min-h-screen">
       {/* Page Header */}
-      <div className="bg-gradient-to-br from-midnight to-midnight/90 pt-32 pb-16 px-6 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-midnight to-midnight/90 pt-28 sm:pt-32 pb-14 sm:pb-16 px-4 sm:px-6 relative overflow-hidden">
         <div className="absolute inset-0 opacity-20" style={{
           backgroundImage: 'radial-gradient(circle at 30% 50%, #7caedd 0%, transparent 60%), radial-gradient(circle at 80% 20%, #97bee0 0%, transparent 50%)',
         }} />
@@ -131,11 +131,11 @@ export default function ExplorePage() {
             <span className="tag bg-white/15 text-white/80 border-white/20 mb-6 inline-flex">
               <MapPin size={12} /> 12 Destinations
             </span>
-            <h1 className="font-display text-6xl md:text-7xl font-light text-white mb-4">
+            <h1 className="font-display text-4xl sm:text-5xl md:text-7xl font-light text-white mb-4">
               Explorer la
               <span className="text-sand-300 italic"> Tunisie</span>
             </h1>
-            <p className="font-body text-xl text-white/60 max-w-lg">
+            <p className="font-body text-base sm:text-xl text-white/60 max-w-lg">
               Découvrez les trésors cachés et les incontournables d&apos;une destination aux mille visages.
             </p>
           </motion.div>
@@ -144,8 +144,8 @@ export default function ExplorePage() {
 
       {/* Search & Filters Bar */}
       <div className="sticky top-16 z-30 bg-parchment/95 backdrop-blur-lg border-b border-sand-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-3">
-          <div className="flex gap-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             {/* Search */}
             <div className="flex-1 relative">
               <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-midnight/30" />
@@ -169,7 +169,7 @@ export default function ExplorePage() {
             {/* Filter Toggle */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-2 px-4 py-3 rounded-2xl border font-body text-sm font-medium transition-colors ${
+              className={`flex items-center justify-center gap-2 px-4 py-3 rounded-2xl border font-body text-sm font-medium transition-colors sm:w-auto ${
                 showFilters || activeTags.length > 0
                   ? 'bg-terracotta-50 border-terracotta-300 text-terracotta-600'
                   : 'bg-white border-sand-200 text-midnight'
@@ -185,7 +185,7 @@ export default function ExplorePage() {
             </button>
 
             {/* View Mode */}
-            <div className="flex bg-white border border-sand-200 rounded-2xl overflow-hidden">
+            <div className="grid grid-cols-2 bg-white border border-sand-200 rounded-2xl overflow-hidden">
               {(['grid', 'map'] as const).map(mode => (
                 <button
                   key={mode}
@@ -259,14 +259,14 @@ export default function ExplorePage() {
       </div>
 
       {/* Results count */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-6">
         <p className="font-body text-sm text-midnight/50">
           <span className="font-semibold text-midnight">{filtered.length}</span> destination{filtered.length > 1 ? 's' : ''} trouvée{filtered.length > 1 ? 's' : ''}
         </p>
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-6 pb-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-20 sm:pb-24">
         {viewMode === 'grid' ? (
           <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <AnimatePresence>
@@ -287,7 +287,7 @@ export default function ExplorePage() {
             )}
           </motion.div>
         ) : (
-          <div className="h-[600px] rounded-4xl overflow-hidden shadow-xl border border-sand-200">
+          <div className="h-[420px] sm:h-[600px] rounded-4xl overflow-hidden shadow-xl border border-sand-200">
             <MapView places={mapPlaces} center={[33.8869, 9.5375]} zoom={6} />
           </div>
         )}

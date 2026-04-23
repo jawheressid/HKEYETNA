@@ -76,12 +76,12 @@ export default function NewTripPage() {
   }
 
   return (
-    <div className="min-h-screen pt-28 pb-20">
-      <div className="px-6">
+    <div className="min-h-screen pt-24 sm:pt-28 pb-20">
+      <div className="px-4 sm:px-6">
         <div className="max-w-5xl mx-auto mb-6 flex items-center justify-between gap-4 flex-wrap">
           <div>
             <span className="tag mb-3 inline-flex">✦ Voyage privé</span>
-            <h1 className="font-display text-3xl md:text-4xl font-light text-midnight">Créer un nouveau voyage</h1>
+            <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-light text-midnight">Créer un nouveau voyage</h1>
           </div>
           <Link href="/profile" className="btn-secondary text-sm">
             Retour au profil
@@ -104,11 +104,11 @@ export default function NewTripPage() {
       {generatedTrip && <ItineraryView trip={generatedTrip} />}
 
       {generatedTrip && (
-        <div className="px-6">
+        <div className="px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="max-w-4xl mx-auto mt-6 bg-white rounded-4xl border border-sand-100 shadow-sm p-6"
+            className="max-w-4xl mx-auto mt-6 bg-white rounded-4xl border border-sand-100 shadow-sm p-5 sm:p-6"
           >
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
@@ -124,16 +124,16 @@ export default function NewTripPage() {
                 )}
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                 <button
                   onClick={handleBooking}
-                  className="btn-primary flex items-center justify-center gap-2 min-w-[220px]"
+                  className="btn-primary flex items-center justify-center gap-2 w-full md:min-w-[220px]"
                   disabled={redirectingToBooking}
                 >
                   {redirectingToBooking ? <Loader2 size={16} className="animate-spin" /> : <CreditCard size={16} />}
                   {redirectingToBooking ? 'Ouverture du booking…' : 'Booking'}
                 </button>
-                <button onClick={handleSave} className="btn-secondary flex items-center justify-center gap-2 min-w-[220px]" disabled={saving}>
+                <button onClick={handleSave} className="btn-secondary flex items-center justify-center gap-2 w-full md:min-w-[220px]" disabled={saving}>
                   {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
                   {saving ? 'Sauvegarde…' : 'Sauvegarder en brouillon'}
                 </button>

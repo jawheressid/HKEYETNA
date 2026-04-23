@@ -292,10 +292,10 @@ export default function ItineraryView({ trip }: Props) {
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="py-16 px-6"
+        className="py-10 sm:py-16 px-4 sm:px-6"
       >
         <div className="max-w-5xl mx-auto">
-          <div className="bg-gradient-to-br from-terracotta-500 to-terracotta-700 rounded-5xl p-10 text-white mb-10 relative overflow-hidden">
+          <div className="bg-gradient-to-br from-terracotta-500 to-terracotta-700 rounded-[2rem] sm:rounded-5xl p-6 sm:p-10 text-white mb-8 sm:mb-10 relative overflow-hidden">
             <div
               className="absolute inset-0 opacity-10"
               style={{
@@ -315,8 +315,8 @@ export default function ItineraryView({ trip }: Props) {
                   </span>
                 ))}
               </div>
-              <h2 className="font-display text-4xl md:text-5xl font-light mb-4">{plannedTrip.title}</h2>
-              <p className="font-body text-white/80 text-lg leading-relaxed max-w-3xl">{plannedTrip.summary}</p>
+              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-light mb-4">{plannedTrip.title}</h2>
+              <p className="font-body text-base sm:text-lg text-white/80 leading-relaxed max-w-3xl">{plannedTrip.summary}</p>
               {plannedTrip.startDate && plannedTrip.endDate && (
                 <p className="font-body text-white/80 text-sm mt-4">
                   Du {new Date(plannedTrip.startDate).toLocaleDateString('fr-FR')} au{' '}
@@ -324,7 +324,7 @@ export default function ItineraryView({ trip }: Props) {
                 </p>
               )}
 
-              <div className="grid sm:grid-cols-4 gap-4 mt-8 pt-6 border-t border-white/20">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-6 border-t border-white/20">
                 <div className="text-center">
                   <div className="font-display text-3xl font-semibold">{plannedTrip.days.length}</div>
                   <div className="text-white/70 text-sm font-body">Jours</div>
@@ -377,7 +377,7 @@ export default function ItineraryView({ trip }: Props) {
                 >
                   <button
                     onClick={() => toggleDay(day.day)}
-                    className="w-full flex items-center gap-5 p-6 hover:bg-sand-50/50 transition-colors text-left"
+                    className="w-full flex flex-col items-start sm:flex-row sm:items-center gap-4 sm:gap-5 p-4 sm:p-6 hover:bg-sand-50/50 transition-colors text-left"
                   >
                     <div className="w-14 h-14 bg-gradient-to-br from-sand-300 to-sand-400 rounded-2xl flex flex-col items-center justify-center flex-shrink-0">
                       <span className="text-xs font-body font-medium text-sand-800">Jour</span>
@@ -385,7 +385,7 @@ export default function ItineraryView({ trip }: Props) {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-3">
-                        <h3 className="font-display text-2xl font-medium text-midnight">{day.location}</h3>
+                        <h3 className="font-display text-xl sm:text-2xl font-medium text-midnight">{day.location}</h3>
                         {day.locationCoordinates && (
                           <WeatherBadge lat={day.locationCoordinates.lat} lng={day.locationCoordinates.lng} />
                         )}
@@ -397,7 +397,7 @@ export default function ItineraryView({ trip }: Props) {
                         <span>{day.activities.filter((activity) => activity.selectedByUser).length} choix confirmés</span>
                       </div>
                     </div>
-                    <div className="text-midnight/30 flex-shrink-0">
+                    <div className="text-midnight/30 flex-shrink-0 self-end sm:self-auto">
                       {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                     </div>
                   </button>
@@ -410,13 +410,13 @@ export default function ItineraryView({ trip }: Props) {
                       className="border-t border-sand-100"
                     >
                       {day.hotel && (
-                        <div className="p-6 bg-sand-50/50 border-b border-sand-100">
-                          <div className="flex gap-4 items-center">
-                            <div className="relative w-24 h-24 rounded-3xl overflow-hidden flex-shrink-0">
+                        <div className="p-4 sm:p-6 bg-sand-50/50 border-b border-sand-100">
+                          <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
+                            <div className="relative w-full sm:w-24 h-44 sm:h-24 rounded-3xl overflow-hidden flex-shrink-0">
                               <Image src={day.hotel.image} alt={day.hotel.name} fill unoptimized className="object-cover" />
                             </div>
                             <div className="flex-1">
-                              <div className="flex items-start justify-between gap-3">
+                              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                                 <div>
                                   <p className="text-xs text-midnight/40 font-body uppercase tracking-wider mb-1">Hébergement</p>
                                   <h4 className="font-body font-semibold text-midnight text-lg">{day.hotel.name}</h4>
@@ -426,7 +426,7 @@ export default function ItineraryView({ trip }: Props) {
                                     ))}
                                   </div>
                                 </div>
-                                <div className="text-right">
+                                <div className="text-left sm:text-right">
                                   <span className="font-display text-xl font-semibold text-terracotta-500">{format(day.hotel.price)}</span>
                                   <p className="text-xs text-midnight/40 font-body">/ nuit</p>
                                 </div>
@@ -448,7 +448,7 @@ export default function ItineraryView({ trip }: Props) {
                           </div>
 
                           {hotelReplacementDay === day.day && (
-                            <div className="mt-4 grid md:grid-cols-2 gap-4">
+                            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                               {hotelSuggestions.map((hotelSuggestion) => (
                                 <button
                                   key={hotelSuggestion.name}
@@ -477,9 +477,9 @@ export default function ItineraryView({ trip }: Props) {
                         </div>
                       )}
 
-                      <div className="p-6">
+                      <div className="p-4 sm:p-6">
                         <div className="relative">
-                          <div className="absolute left-8 top-0 bottom-0 w-px bg-sand-200" />
+                          <div className="absolute left-4 sm:left-8 top-0 bottom-0 w-px bg-sand-200" />
                           <div className="space-y-5">
                             {day.activities.map((activity) => {
                               const style = TYPE_COLORS[activity.type] || TYPE_COLORS.visite;
@@ -489,12 +489,12 @@ export default function ItineraryView({ trip }: Props) {
 
                               return (
                                 <div key={activity.id || activity.title} className="space-y-4 relative">
-                                  <div className="flex gap-4 relative">
-                                    <div className={`w-16 h-16 rounded-2xl ${style.badge} flex items-center justify-center flex-shrink-0 z-10 font-body text-xs font-semibold`}>
+                                  <div className="flex gap-3 sm:gap-4 relative">
+                                    <div className={`w-10 sm:w-16 h-10 sm:h-16 rounded-xl sm:rounded-2xl ${style.badge} flex items-center justify-center flex-shrink-0 z-10 font-body text-[10px] sm:text-xs font-semibold`}>
                                       {activity.time}
                                     </div>
 
-                                    <div className={`flex-1 bg-sand-50/70 rounded-3xl p-4 border ${style.card}`}>
+                                    <div className={`flex-1 bg-sand-50/70 rounded-2xl sm:rounded-3xl p-4 border ${style.card}`}>
                                       <div className="flex items-start justify-between gap-3">
                                         <div className="space-y-3 flex-1">
                                           <div className="flex flex-wrap items-center gap-2">
@@ -521,7 +521,7 @@ export default function ItineraryView({ trip }: Props) {
                                             )}
                                           </div>
 
-                                          <div className="flex items-start justify-between gap-3">
+                                          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                                             <div>
                                               <h4 className="font-body font-semibold text-midnight text-lg">{activity.title}</h4>
                                               <p className="text-sm text-midnight/60 font-body mt-1 leading-relaxed">{activity.description}</p>
@@ -542,7 +542,7 @@ export default function ItineraryView({ trip }: Props) {
                                         </div>
                                       </div>
 
-                                      <div className="mt-4 pt-4 border-t border-sand-200 flex justify-end">
+                                      <div className="mt-4 pt-4 border-t border-sand-200 flex justify-start sm:justify-end">
                                         <button
                                           onClick={() =>
                                             setReplacementState(
@@ -565,14 +565,14 @@ export default function ItineraryView({ trip }: Props) {
                                   </div>
 
                                   {isReplacementOpen && (
-                                    <div className="ml-20 bg-white border border-sand-100 rounded-3xl p-5 shadow-sm">
-                                      <div className="flex items-center gap-2 mb-4">
+                                    <div className="ml-0 sm:ml-20 bg-white border border-sand-100 rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-sm">
+                                      <div className="flex items-start sm:items-center gap-2 mb-4">
                                         <Route size={16} className="text-terracotta-500" />
                                         <p className="font-body font-semibold text-midnight">
                                           Deux alternatives prêtes à choisir
                                         </p>
                                       </div>
-                                      <div className="grid md:grid-cols-2 gap-4">
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {replacementOptions.length > 0 ? (
                                           replacementOptions.map((experience) => (
                                             <ReplacementCard
@@ -624,7 +624,7 @@ export default function ItineraryView({ trip }: Props) {
       {plannedTrip.days.length > 0 && (
         <button
           onClick={() => setMapOpen(true)}
-          className="fixed right-6 top-1/2 -translate-y-1/2 z-40 btn-primary shadow-2xl rounded-full px-5 py-4 flex items-center gap-2"
+          className="fixed left-4 right-4 bottom-4 sm:left-auto sm:right-6 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2 z-40 btn-primary shadow-2xl rounded-full px-5 py-4 flex items-center justify-center gap-2"
         >
           <MapPinned size={18} />
           Voir sur map
@@ -646,11 +646,11 @@ export default function ItineraryView({ trip }: Props) {
               transition={{ type: 'spring', stiffness: 280, damping: 28 }}
               className="absolute right-0 top-0 h-full w-full md:w-[480px] bg-white shadow-2xl border-l border-sand-100 flex flex-col"
             >
-              <div className="p-6 border-b border-sand-100">
+              <div className="p-4 sm:p-6 border-b border-sand-100">
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div>
                     <span className="tag mb-3 inline-flex">Carte du séjour</span>
-                    <h3 className="font-display text-3xl text-midnight">Étapes jour par jour</h3>
+                    <h3 className="font-display text-2xl sm:text-3xl text-midnight">Étapes jour par jour</h3>
                     <p className="font-body text-sm text-midnight/55 mt-2">
                       Hôtels et activités géolocalisés, avec itinéraire pointillé entre les étapes.
                     </p>
@@ -680,7 +680,7 @@ export default function ItineraryView({ trip }: Props) {
                 </div>
               </div>
 
-              <div className="p-6 border-b border-sand-100 font-body text-sm text-midnight/60">
+              <div className="p-4 sm:p-6 border-b border-sand-100 font-body text-sm text-midnight/60">
                 <p className="font-semibold text-midnight">{activeDay.location}</p>
                 {activeDay.date && <p>{formatDisplayDate(activeDay.date)}</p>}
                 {nextActivity && (
@@ -697,7 +697,7 @@ export default function ItineraryView({ trip }: Props) {
                 )}
               </div>
 
-              <div className="flex-1 p-6">
+              <div className="flex-1 p-4 sm:p-6">
                 <div className="h-full rounded-4xl overflow-hidden border border-sand-200">
                   <MapView
                     places={mapStops}

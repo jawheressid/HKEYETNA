@@ -250,7 +250,7 @@ function ProfilePageContent() {
   }
 
   return (
-    <div className="min-h-screen pt-28 pb-20 px-6">
+    <div className="min-h-screen pt-24 sm:pt-28 pb-20 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-[280px_1fr] gap-8">
           <aside className="hidden md:block">
@@ -310,7 +310,7 @@ function ProfilePageContent() {
 
           <main>
             <div className="md:hidden mb-6">
-              <div className="flex items-center gap-4 mb-6">
+              <div className="flex items-center gap-3 mb-6">
                 <div className="w-14 h-14 rounded-full bg-gradient-to-br from-terracotta-400 to-terracotta-600 flex items-center justify-center overflow-hidden">
                   {avatarUrl ? (
                     <img src={avatarUrl} alt={profile?.full_name ?? 'Avatar'} className="w-full h-full object-cover" />
@@ -326,7 +326,7 @@ function ProfilePageContent() {
                 </div>
               </div>
 
-              <div className="flex bg-sand-100 rounded-2xl p-1">
+              <div className="grid grid-cols-3 bg-sand-100 rounded-2xl p-1 gap-1">
                 {[
                   { id: 'trips', label: 'Mes voyages' },
                   { id: 'bookings', label: 'Bookings' },
@@ -335,7 +335,7 @@ function ProfilePageContent() {
                   <button
                     key={currentTab.id}
                     onClick={() => setTab(currentTab.id as 'trips' | 'bookings' | 'settings')}
-                    className={`flex-1 py-2 rounded-xl font-body font-semibold text-sm transition-all ${
+                    className={`py-2 rounded-xl font-body font-semibold text-xs sm:text-sm transition-all ${
                       tab === currentTab.id ? 'bg-white text-midnight shadow-sm' : 'text-midnight/50'
                     }`}
                   >
@@ -346,15 +346,15 @@ function ProfilePageContent() {
             </div>
 
             <div className="mb-8 grid lg:grid-cols-[1fr_0.95fr] gap-5">
-              <div className="bg-white rounded-4xl border border-sand-100 shadow-sm p-7">
+              <div className="bg-white rounded-4xl border border-sand-100 shadow-sm p-5 sm:p-7">
                 <span className="tag mb-4 inline-flex">✦ Tableau de bord</span>
-                <h1 className="font-display text-4xl font-light text-midnight mb-3">
+                <h1 className="font-display text-3xl sm:text-4xl font-light text-midnight mb-3">
                   Bienvenue {firstName}
                 </h1>
                 <p className="font-body text-midnight/55 max-w-xl">
                   Retrouvez vos voyages, vos bookings confirmés et personnalisez votre profil avant de repartir explorer la Tunisie.
                 </p>
-                <div className="grid sm:grid-cols-3 gap-3 mt-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
                   <div className="bg-sand-50 rounded-3xl border border-sand-200 p-4">
                     <p className="text-xs font-body text-midnight/40 mb-1">Voyages</p>
                     <p className="font-display text-2xl text-midnight">{trips.length}</p>
@@ -370,7 +370,7 @@ function ProfilePageContent() {
                 </div>
               </div>
 
-              <div className="relative rounded-4xl overflow-hidden min-h-[300px] border border-sand-100 shadow-sm bg-white">
+              <div className="relative rounded-4xl overflow-hidden min-h-[260px] sm:min-h-[300px] border border-sand-100 shadow-sm bg-white">
                 {PROFILE_SLIDES.map((slide, index) => (
                   <motion.img
                     key={slide.title}
@@ -384,7 +384,7 @@ function ProfilePageContent() {
                 ))}
                 <div className="absolute inset-0 bg-gradient-to-t from-midnight/75 via-midnight/20 to-transparent" />
                 <div className="absolute bottom-0 inset-x-0 p-6">
-                  <p className="font-display text-3xl text-white">{PROFILE_SLIDES[activeSlide].title}</p>
+                  <p className="font-display text-2xl sm:text-3xl text-white">{PROFILE_SLIDES[activeSlide].title}</p>
                   <p className="font-body text-white/75 mt-1">{PROFILE_SLIDES[activeSlide].caption}</p>
                   <div className="flex gap-2 mt-4">
                     {PROFILE_SLIDES.map((slide, index) => (
@@ -407,7 +407,7 @@ function ProfilePageContent() {
                       <span className="tag mb-2 inline-flex">✦ Mes itinéraires</span>
                       <h1 className="font-display text-3xl font-light text-midnight">Mes voyages</h1>
                     </div>
-                    <Link href="/trip/new" className="btn-primary flex items-center gap-2 text-sm">
+                    <Link href="/trip/new" className="btn-primary flex items-center justify-center gap-2 text-sm w-full sm:w-auto">
                       <Plus size={15} />
                       Nouveau voyage
                     </Link>
@@ -438,7 +438,7 @@ function ProfilePageContent() {
                       <span className="tag mb-2 inline-flex">✦ Confirmations</span>
                       <h1 className="font-display text-3xl font-light text-midnight">Mes bookings</h1>
                     </div>
-                    <Link href="/trip/new" className="btn-primary flex items-center gap-2 text-sm">
+                    <Link href="/trip/new" className="btn-primary flex items-center justify-center gap-2 text-sm w-full sm:w-auto">
                       <Plus size={15} />
                       Nouveau booking
                     </Link>
@@ -478,7 +478,7 @@ function ProfilePageContent() {
                     <h1 className="font-display text-3xl font-light text-midnight">Paramètres</h1>
                   </div>
 
-                  <div className="bg-white rounded-4xl border border-sand-100 shadow-sm p-8 max-w-lg space-y-6">
+                  <div className="bg-white rounded-4xl border border-sand-100 shadow-sm p-5 sm:p-8 max-w-lg space-y-6">
                     <div>
                       <label className="font-body font-semibold text-sm text-midnight mb-2 block">Nom complet</label>
                       <input
@@ -541,7 +541,7 @@ function ProfilePageContent() {
                     </button>
                   </div>
 
-                  <div className="bg-white rounded-4xl border border-red-100 p-8 max-w-lg mt-6">
+                  <div className="bg-white rounded-4xl border border-red-100 p-5 sm:p-8 max-w-lg mt-6">
                     <h3 className="font-body font-semibold text-sm text-red-600 mb-4">Zone de danger</h3>
                     <button
                       onClick={handleSignOut}

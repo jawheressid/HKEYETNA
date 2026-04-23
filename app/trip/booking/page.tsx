@@ -127,7 +127,7 @@ export default function BookingPage() {
 
   if (!pendingBooking) {
     return (
-      <div className="min-h-screen pt-32 px-6">
+      <div className="min-h-screen pt-28 sm:pt-32 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto bg-white rounded-4xl border border-sand-100 shadow-sm p-8 text-center">
           <h1 className="font-display text-3xl text-midnight mb-3">Aucun voyage à booker</h1>
           <p className="font-body text-midnight/55 mb-6">
@@ -142,16 +142,16 @@ export default function BookingPage() {
   }
 
   return (
-    <div className="min-h-screen pt-28 pb-20 px-6">
+    <div className="min-h-screen pt-24 sm:pt-28 pb-20 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <span className="tag mb-3 inline-flex">✦ Booking</span>
-          <h1 className="font-display text-4xl font-light text-midnight">Vérifiez votre voyage et confirmez</h1>
+          <h1 className="font-display text-3xl sm:text-4xl font-light text-midnight">Vérifiez votre voyage et confirmez</h1>
         </div>
 
         <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-6">
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-4xl border border-sand-100 shadow-sm p-7">
-            <h2 className="font-display text-2xl text-midnight mb-4">{pendingBooking.trip.title}</h2>
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-4xl border border-sand-100 shadow-sm p-5 sm:p-7">
+            <h2 className="font-display text-xl sm:text-2xl text-midnight mb-4">{pendingBooking.trip.title}</h2>
             <p className="font-body text-midnight/60 leading-relaxed mb-6">{pendingBooking.trip.summary}</p>
 
             <div className="grid sm:grid-cols-2 gap-4 mb-6">
@@ -201,7 +201,7 @@ export default function BookingPage() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-            <div className="bg-white rounded-4xl border border-sand-100 shadow-sm p-7">
+            <div className="bg-white rounded-4xl border border-sand-100 shadow-sm p-5 sm:p-7">
               <p className="font-body font-semibold text-midnight mb-4">Voyageur principal</p>
               <div className="space-y-4">
                 <input
@@ -227,7 +227,7 @@ export default function BookingPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-4xl border border-sand-100 shadow-sm p-7">
+            <div className="bg-white rounded-4xl border border-sand-100 shadow-sm p-5 sm:p-7">
               <p className="font-body font-semibold text-midnight mb-4">Mode de paiement</p>
               <div className="space-y-3">
                 {PAYMENT_OPTIONS.map((option) => (
@@ -249,7 +249,7 @@ export default function BookingPage() {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-midnight to-midnight/90 rounded-4xl p-7 text-white">
+            <div className="bg-gradient-to-br from-midnight to-midnight/90 rounded-4xl p-5 sm:p-7 text-white">
               <div className="flex items-center gap-2 mb-3">
                 <CheckCircle2 size={18} className="text-olive-300" />
                 <p className="font-body font-semibold">Confirmation finale</p>

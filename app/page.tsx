@@ -113,7 +113,7 @@ export default function HomePage() {
       <HeroSection />
 
       {/* Featured Places */}
-      <section className="py-20 px-6">
+      <section className="py-16 sm:py-20 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={false}
@@ -150,7 +150,7 @@ export default function HomePage() {
       </section>
 
       {/* Map Section */}
-      <section className="py-14 px-6">
+      <section className="py-12 sm:py-14 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           <div className="surface-card p-6 sm:p-8">
             <motion.div
@@ -166,7 +166,7 @@ export default function HomePage() {
               </h2>
               <p className="font-body text-midnight/60">Cliquez sur un marqueur pour découvrir le lieu</p>
             </motion.div>
-            <div className="h-[500px] rounded-4xl overflow-hidden shadow-xl border border-sand-200/70">
+            <div className="h-[360px] sm:h-[500px] rounded-4xl overflow-hidden shadow-xl border border-sand-200/70">
               <MapView places={mapPlaces} center={[33.8869, 9.5375]} zoom={6} />
             </div>
           </div>
@@ -174,7 +174,7 @@ export default function HomePage() {
       </section>
 
       {/* Experiences */}
-      <section className="py-20 px-6">
+      <section className="py-16 sm:py-20 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={false}
@@ -209,7 +209,7 @@ export default function HomePage() {
 
       {/* Static Trip Preview */}
       <div className="bg-sand-50/50 border-y border-sand-200/50">
-        <section id="trip" className="py-24 px-6">
+        <section id="trip" className="py-16 sm:py-24 px-4 sm:px-6">
           <div className="max-w-5xl mx-auto">
             <motion.div
               initial={false}
@@ -222,11 +222,11 @@ export default function HomePage() {
                 <Sparkles size={14} />
                 Propulsé par l&apos;Intelligence Artificielle
               </div>
-              <h2 className="font-display text-5xl md:text-6xl font-light text-midnight mb-5">
+              <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-light text-midnight mb-5">
                 Votre voyage,
                 <span className="text-terracotta-500 italic"> personnalisé</span>
               </h2>
-              <p className="font-body text-lg text-midnight/60 max-w-xl mx-auto mb-10">
+              <p className="font-body text-base sm:text-lg text-midnight/60 max-w-xl mx-auto mb-10">
                 Décrivez vos envies, notre IA compose un itinéraire sur mesure adapté à votre budget et vos intérêts.
               </p>
             </motion.div>
@@ -236,7 +236,7 @@ export default function HomePage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.1 }}
-              className="bg-white rounded-5xl shadow-xl border border-sand-100 overflow-hidden mb-10 p-8 md:p-12"
+              className="bg-white rounded-5xl shadow-xl border border-sand-100 overflow-hidden mb-10 p-5 sm:p-8 md:p-12"
             >
               <div className="flex flex-wrap items-center gap-3 mb-8">
                 <div className="tag">Exemple — 3 jours à Tunis &amp; Djerba</div>
@@ -296,7 +296,7 @@ export default function HomePage() {
 
               <div className="relative mt-6">
                 <div className="absolute inset-0 bg-gradient-to-t from-white via-white/85 to-transparent rounded-3xl z-10 flex flex-col items-center justify-end pb-8 gap-4">
-                  <p className="font-body text-midnight/60 text-sm text-center max-w-sm">
+                  <p className="font-body text-midnight/60 text-sm text-center max-w-sm px-4">
                     Créez un compte pour générer votre propre itinéraire personnalisé.
                   </p>
                   <Link href="/login" className="btn-primary flex items-center gap-2 text-sm px-8">
@@ -319,7 +319,7 @@ export default function HomePage() {
       <SocialFeed />
 
       {/* Footer */}
-      <footer className="bg-midnight py-16 px-6 border-t border-white/5">
+      <footer className="bg-midnight py-16 px-4 sm:px-6 border-t border-white/5">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-14">
             <div className="md:col-span-2">
